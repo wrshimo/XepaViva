@@ -1,0 +1,15 @@
+<svg width="200" height="50" xmlns="http://www.w3.org/2000/svg">
+    <style>
+        .text {
+            font-family: Arial, sans-serif;
+            font-size: 32px;
+            font-weight: bold;
+            fill: #2ECC71;
+        }
+        .emoji {
+            font-size: 30px;
+        }
+    </style>
+    <text x="40" y="35" class="text">XepaViva</text>
+    <text x="0" y="35" class="emoji">🍎</text>
+</svg>

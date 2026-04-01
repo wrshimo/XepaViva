@@ -1,3 +1,110 @@
-/* CSS geral para o projeto XepaViva */
+/* Estilos Globais e de Alto Contraste para XepaViva */
 
-/* Você pode adicionar aqui o modo de alto contraste, por exemplo */
+/* Tema Padrão */
+body {
+    font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+.btn {
+    min-height: 44px; /* Garante acessibilidade de toque */
+}
+
+/* ------------------------- */
+/* Modo de Alto Contraste    */
+/* ------------------------- */
+
+/* Ativa a classe no body para aplicar o tema */
+body.high-contrast {
+    background-color: #FFFFFF !important;
+    color: #000000 !important;
+}
+
+/* Cabeçalho e Navegação */
+.high-contrast .navbar {
+    background-color: #FFFFFF !important;
+    border-bottom: 2px solid #000000 !important;
+}
+
+.high-contrast .navbar-brand img {
+    filter: invert(1);
+}
+
+.high-contrast .nav-link,
+.high-contrast .navbar-brand {
+    color: #000000 !important;
+}
+
+.high-contrast .nav-pills .nav-link.active {
+    background-color: #000000 !important;
+    color: #FFFFFF !important;
+    border: 2px solid #000000;
+}
+
+.high-contrast .nav-pills .nav-link {
+    border: 1px solid transparent;
+}
+
+.high-contrast .btn-outline-light {
+    color: #000000 !important;
+    border-color: #000000 !important;
+}
+
+/* Cards */
+.high-contrast .card {
+    background-color: #FFFFFF !important;
+    border: 2px solid #000000 !important;
+    box-shadow: none !important;
+}
+
+.high-contrast .card-title,
+.high-contrast .card-text,
+.high-contrast .card-title .bi, /* Garante que ícones no título do card fiquem pretos */
+.high-contrast .text-muted {
+    color: #000000 !important;
+}
+
+.high-contrast .badge {
+    background-color: #000000 !important;
+    color: #FFFFFF !important;
+    border: 1px solid #000000;
+}
+
+/* Botões */
+.high-contrast .btn-primary {
+    background-color: #000000 !important;
+    color: #FFFFFF !important;
+    border: 2px solid #000000 !important;
+}
+
+.high-contrast .btn-primary .bi {
+    color: #FFFFFF !important; /* Ícone branco em botão primário */
+}
+
+.high-contrast .btn-outline-secondary,
+.high-contrast .btn-outline-danger,
+.high-contrast .btn-outline-success {
+    border-width: 2px !important;
+    border-color: #000000 !important;
+    color: #000000 !important;
+}
+
+.high-contrast .btn .bi { /* Garante que ícones em botões herdem a cor do botão */
+    color: inherit;
+}
+
+/* Formulários */
+.high-contrast .form-control,
+.high-contrast .form-select {
+    background-color: #FFFFFF !important;
+    border: 2px solid #000000 !important;
+    color: #000000 !important;
+}
+
+.high-contrast .form-label {
+    color: #000000 !important;
+}
+
+/* Gráficos (Chart.js) - Ajusta cores para serem visíveis */
+.high-contrast canvas {
+    border: 1px solid #000000;
+}

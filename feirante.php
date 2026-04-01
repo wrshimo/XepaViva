@@ -8,6 +8,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <link href="assets/css/style.css" rel="stylesheet">
     <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2ECC71">
 </head>
 <body>
 
@@ -16,7 +18,11 @@
             <a class="navbar-brand" href="feirante.php">
                 <img src="assets/images/logo-white.svg" alt="Logo XepaViva" width="120">
             </a>
-            <div class="d-flex">
+            <div class="d-flex align-items-center">
+                <button id="highContrastToggle" class="btn btn-outline-light me-2">
+                    <i class="bi bi-sun"></i>
+                    <span class="d-none d-sm-inline">Alto Contraste</span>
+                </button>
                 <a href="index.php" class="btn btn-outline-light">Sair</a>
             </div>
         </div>
@@ -27,8 +33,7 @@
             <ul class="nav nav-pills">
                 <li class="nav-item"><a href="feirante.php" class="nav-link active" aria-current="page">Painel</a></li>
                 <li class="nav-item"><a href="#" class="nav-link">Minhas Ofertas</a></li>
-                <li class="nav-item"><a href="cadastrar_oferta.php" class="nav-link">Cadastrar Xepa</a></li>
-                <li class="nav-item"><a href="#" class="nav-link">Relatórios</a></li>
+                <li class="nav-item"><a href="cadastrar_oferta.php" class="nav-link">Cadastrar</a></li>
             </ul>
         </div>
     </nav>
@@ -39,7 +44,7 @@
             <div class="col-md-4 mb-3">
                 <div class="card text-center shadow-sm">
                     <div class="card-body">
-                        <h5 class="card-title"><i class="bi bi-cash-coin text-success"></i> Receita com a Xepa</h5>
+                        <h5 class="card-title"><i class="bi bi-cash-coin"></i> Receita com a Xepa</h5>
                         <p class="card-text fs-4 fw-bold">R$ 150,00</p>
                     </div>
                 </div>
@@ -47,7 +52,7 @@
             <div class="col-md-4 mb-3">
                 <div class="card text-center shadow-sm">
                     <div class="card-body">
-                        <h5 class="card-title"><i class="bi bi-box-seam text-primary"></i> Alimentos Salvos</h5>
+                        <h5 class="card-title"><i class="bi bi-box-seam"></i> Alimentos Salvos</h5>
                         <p class="card-text fs-4 fw-bold">35 Kg</p>
                     </div>
                 </div>
@@ -55,7 +60,7 @@
             <div class="col-md-4 mb-3">
                 <div class="card text-center shadow-sm">
                     <div class="card-body">
-                        <h5 class="card-title"><i class="bi bi-cart-check text-info"></i> Kits Reservados Hoje</h5>
+                        <h5 class="card-title"><i class="bi bi-cart-check"></i> Kits Reservados Hoje</h5>
                         <p class="card-text fs-4 fw-bold">15</p>
                     </div>
                 </div>
@@ -64,20 +69,21 @@
 
         <!-- Gráfico e Ação Rápida -->
         <section class="row mb-4">
-            <div class="col-md-8">
+            <div class="col-md-8 mb-3">
                 <div class="card shadow-sm">
                     <div class="card-body">
                         <h5 class="card-title">Receita por Semana</h5>
-                        <canvas id="receitaChart"></canvas>
+                        <div style="position: relative; height: 300px;">
+                            <canvas id="receitaChart"></canvas>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-4 mb-3">
                 <div class="card shadow-sm h-100">
                     <div class="card-body d-flex flex-column justify-content-center text-center">
                         <h5 class="card-title">Pronto para vender mais?</h5>
-                        <p class="card-text">Anuncie um novo kit de xepa e evite o desperdício.</p>
-                        <a href="cadastrar_oferta.php" class="btn btn-primary btn-lg" style="min-height: 44px;">
+                        <a href="cadastrar_oferta.php" class="btn btn-primary btn-lg">
                             <i class="bi bi-plus-circle"></i> Anunciar Nova Xepa
                         </a>
                     </div>
@@ -95,23 +101,9 @@
                             <h5 class="card-title mb-1">Tomate Italiano</h5>
                             <span class="badge bg-success">10 Reservas</span>
                         </div>
-                        <div>
-                            <a href="#" class="btn btn-outline-secondary btn-sm me-2" style="min-height: 44px;"><i class="bi bi-pencil"></i> Editar</a>
-                            <a href="#" class="btn btn-outline-danger btn-sm" style="min-height: 44px;"><i class="bi bi-trash"></i> Excluir</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="card mb-3 shadow-sm">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h5 class="card-title mb-1">Banana Prata</h5>
-                            <span class="badge bg-success">5 Reservas</span>
-                        </div>
-                        <div>
-                            <a href="#" class="btn btn-outline-secondary btn-sm me-2" style="min-height: 44px;"><i class="bi bi-pencil"></i> Editar</a>
-                            <a href="#" class="btn btn-outline-danger btn-sm" style="min-height: 44px;"><i class="bi bi-trash"></i> Excluir</a>
+                        <div class="btn-group">
+                            <a href="#" class="btn btn-outline-secondary"><i class="bi bi-pencil"></i> <span class="d-none d-sm-inline">Editar</span></a>
+                            <a href="#" class="btn btn-outline-danger"><i class="bi bi-trash"></i> <span class="d-none d-sm-inline">Excluir</span></a>
                         </div>
                     </div>
                 </div>
@@ -127,29 +119,41 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        // Gráfico de Receita por Semana (Dados de Exemplo)
-        const ctx = document.getElementById('receitaChart').getContext('2d');
-        const receitaChart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: ['Semana 1', 'Semana 2', 'Semana 3', 'Semana 4'],
-                datasets: [{
-                    label: 'Receita (R$)',
-                    data: [50, 75, 120, 150],
-                    backgroundColor: 'rgba(46, 204, 113, 0.2)',
-                    borderColor: 'rgba(46, 204, 113, 1)',
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                },
-                responsive: true,
-                maintainAspectRatio: false
+        document.addEventListener('DOMContentLoaded', () => {
+            const highContrastToggle = document.getElementById('highContrastToggle');
+            const body = document.body;
+
+            // Verifica o estado no LocalStorage e aplica o tema
+            if (localStorage.getItem('highContrast') === 'true') {
+                body.classList.add('high-contrast');
             }
+
+            // Alterna o tema e salva o estado
+            highContrastToggle.addEventListener('click', () => {
+                body.classList.toggle('high-contrast');
+                localStorage.setItem('highContrast', body.classList.contains('high-contrast'));
+            });
+
+            // Gráfico de Receita por Semana
+            const ctx = document.getElementById('receitaChart').getContext('2d');
+            const receitaChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Semana 1', 'Semana 2', 'Semana 3', 'Semana 4'],
+                    datasets: [{
+                        label: 'Receita (R$)',
+                        data: [50, 75, 120, 150],
+                        backgroundColor: 'rgba(25, 135, 84, 0.2)',
+                        borderColor: 'rgba(25, 135, 84, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: { y: { beginAtZero: true } },
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
         });
     </script>
 </body>

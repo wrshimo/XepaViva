@@ -3,43 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login | XepaViva</title>
-    <meta name="description" content="Acesse sua conta ou cadastre-se no XepaViva para comprar ou vender alimentos frescos.">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <title>XepaViva: Dê uma segunda chance aos alimentos!</title>
+    <meta name="description" content="Conectando feirantes e consumidores para reduzir o desperdício de alimentos e promover a sustentabilidade.">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <link href="assets/css/style.css" rel="stylesheet">
     <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2ECC71">
 </head>
-<body class="d-flex align-items-center justify-content-center vh-100">
-
-    <div class="container text-center" style="max-width: 480px;">
-        <header>
-            <img src="assets/images/logo.svg" alt="Logo do XepaViva" class="mb-4" width="200">
-            <h1 class="h3 mb-3 fw-normal">Bem-vindo(a) ao XepaViva!</h1>
-            <p class="mb-4">Conectando feirantes e consumidores para reduzir o desperdício de alimentos.</p>
-        </header>
-
-        <main>
-            <div class="card p-4">
-                <div class="card-body">
-                    <h2 class="h4 mb-4">Selecione seu perfil para continuar</h2>
-                    <div class="d-grid gap-3">
-                        <a href="feirante.php" class="btn btn-primary btn-lg" style="min-height: 44px;">
-                            <i class="bi bi-shop"></i> Sou Feirante
-                        </a>
-                        <a href="consumidor.php" class="btn btn-success btn-lg" style="min-height: 44px;">
-                            <i class="bi bi-cart3"></i> Sou Consumidor
-                        </a>
-                    </div>
-                </div>
+<body>
+    <header class="navbar navbar-expand-lg navbar-dark bg-success shadow-sm">
+        <div class="container">
+            <a class="navbar-brand" href="index.php">
+                <img src="assets/images/logo-white.svg" alt="Logo XepaViva" width="140">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="como-funciona.php">Como Funciona</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#impacto">Impacto</a></li>
+                    <li class="nav-item"><a class="nav-link btn btn-outline-light" href="login.php">Login</a></li>
+                </ul>
             </div>
-        </main>
+        </div>
+    </header>
 
-        <footer class="mt-5 text-muted">
-            <p>&copy; 2026 XepaViva. Todos os direitos reservados.</p>
-        </footer>
-    </div>
+    <main>
+        <section class="text-center bg-light py-5">
+            <div class="container">
+                <img src="assets/images/logo.svg" alt="Logo XepaViva" class="mb-3" width="120">
+                <h1 class="display-5 fw-bold">Alimentos bons demais para serem desperdiçados.</h1>
+                <p class="lead text-muted">A XepaViva conecta você a feirantes locais, oferecendo produtos de qualidade por um preço justo e evitando o desperdício.</p>
+                <a href="#" class="btn btn-primary btn-lg">Encontrar Xepas Perto de Mim</a>
+            </div>
+        </section>
+    </main>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-    <script src="assets/js/app.js"></script>
+    <footer class="py-4 text-center text-muted">
+        <p>&copy; 2026 XepaViva. Juntos contra o desperdício.</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

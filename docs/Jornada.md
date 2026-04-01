@@ -4,6 +4,19 @@ Este documento descreve a rotina diária de nossos dois principais *stakeholders
 
 ---
 
+## ✨ Jornada Zero: A Descoberta (Novo Visitante)
+**Local:** Mídia Social ou Busca no Google  
+**Perfil:** Potencial usuário (consumidor ou feirante) que ouviu falar sobre o XepaViva.
+
+### O Primeiro Contato
+Um novo visitante chega à página inicial (`index.php`) do XepaViva. Ele está curioso, mas ainda não entende completamente o que o serviço oferece. A chamada principal "Alimentos bons demais para serem desperdiçados" chama sua atenção.
+
+*   **Ação no XepaViva:** O visitante clica no item de menu **"Como Funciona"** para entender a proposta de valor.
+*   **Funcionalidade:** Ele é direcionado para a página `como-funciona.php`, que explica claramente, com ícones e texto simples, os três passos para consumidores (Descubra, Reserve, Retire) e para feirantes (Anuncie, Receba, Venda). Essa clareza é crucial para converter o visitante em um usuário ativo.
+*   **Decisão:** Após entender o processo e os benefícios, ele decide se cadastrar ou explorar as ofertas, dando início à sua própria jornada como "Mariana" ou "Seu Benedito".
+
+---
+
 ## 👨‍🌾 A Jornada de Seu Benedito (O Feirante)
 **Local:** Feira do Porto, Cuiabá - MT  
 **Perfil:** 58 anos, trabalhador resiliente, pouco familiarizado com termos técnicos, mas prático.
@@ -16,8 +29,8 @@ Na Feira do Porto, o som de estruturas metálicas e o aroma de pastéis dominam 
 
 ### 10:30 - O Ponto de Virada (1º Contato com o App)
 O calor de 38°C começa a castigar. Benedito percebe que três caixas de tomates estão maduras demais e dificilmente sobreviverão até o dia seguinte. Antigamente, ele as deixaria para trás ou jogaria fora. 
-* **Ação no XepaViva:** Ele limpa o suor do rosto, pega seu celular e abre o ícone do XepaViva na tela inicial (PWA). Graças ao **Modo de Alto Contraste**, ele enxerga bem os botões mesmo sob o sol forte. 
-* **Funcionalidade:** Ele clica em "Anunciar Xepa", seleciona o ícone de Tomate e define o preço: "R$ 5,00 o Kit". O sistema já pega sua localização automática.
+* **Ação no XepaViva:** Ele limpa o suor do rosto, pega seu celular e abre o ícone do XepaViva na tela inicial (PWA). A tela está difícil de ler sob o sol forte. Com um toque no **ícone de sol (☀️) no topo da tela**, a interface imediatamente se transforma: o fundo fica branco, e todos os textos e botões ganham bordas pretas espessas. Graças ao **Modo de Alto Contraste**, ele enxerga perfeitamente.
+* **Funcionalidade:** Ele clica no botão grande "Anunciar Xepa", seleciona o ícone de Tomate e define o preço: "R$ 5,00 o Kit". O sistema já pega sua localização automática, e o anúncio é publicado.
 
 ### 12:00 - A "Hora da Xepa" (2º Contato com o App)
 A feira começa a esvaziar. Benedito ouve um bipe no celular. É uma notificação do XepaViva.

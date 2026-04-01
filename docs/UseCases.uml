@@ -1,0 +1,50 @@
+@startuml
+'''
+''' @project    XepaViva
+''' @version    1.0
+''' @author     Gemini Architect
+''' @date       24/03/2026
+''' @brief      Diagrama de Casos de Uso para o PWA XepaViva.
+'''
+''' Este diagrama modela as principais interações dos usuários (Atores)
+''' com as funcionalidades do sistema (Casos de Uso), com base na
+''' documentação de requisitos do projeto.
+'''
+
+' Configurações de Aparência
+left to right direction
+skinparam packageStyle rectangle
+
+' Definição dos Atores
+actor "Feirante" as feirante
+actor "Consumidor" as consumidor
+
+' Definição do Pacote do Sistema
+rectangle "XepaViva PWA" {
+
+    ' Casos de Uso do Feirante
+    usecase "Anunciar Kit Xepa" as UC01
+    usecase "Gerenciar Ofertas" as UC03
+    usecase "Sincronizar Dados Offline" as UC05
+
+    ' Casos de Uso do Consumidor
+    usecase "Reservar Kit" as UC02
+
+    ' Caso de Uso Compartilhado
+    usecase "Visualizar Dashboard" as UC04
+
+    ' Relacionamentos
+    feirante -- UC01
+    feirante -- UC03
+
+    consumidor -- UC02
+
+    feirante -- UC04
+    consumidor -- UC04
+
+    ' O caso de uso "Anunciar Kit Xepa" inclui a lógica de sincronização
+    ' para funcionar em modo offline, conforme especificado em UC-05.
+    UC01 .> UC05 : <<include>>
+}
+
+@enduml

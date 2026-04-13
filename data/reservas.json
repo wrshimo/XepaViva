@@ -1,0 +1,34 @@
+{
+  "reservas": [
+    {
+      "id": 1,
+      "consumidor_id": 101,
+      "consumidor_nome": "Mariana Silva",
+      "oferta_id": 1,
+      "oferta_nome": "Tomate Italiano",
+      "feirante_nome": "Seu Benedito",
+      "feirante_local": "Feira do Porto, Cuiabá",
+      "preco": 5.00,
+      "peso": 2.5,
+      "status": "Confirmada",
+      "codigo_retirada": "XVA-001-2604",
+      "data_reserva": "2026-04-13T11:00:00Z",
+      "data_retirada_prevista": "2026-04-13T16:00:00Z"
+    },
+    {
+      "id": 2,
+      "consumidor_id": 101,
+      "consumidor_nome": "Mariana Silva",
+      "oferta_id": 4,
+      "oferta_nome": "Alface Crespa",
+      "feirante_nome": "Dona Maria",
+      "feirante_local": "Feira de Pinheiros",
+      "preco": 2.50,
+      "peso": 0.5,
+      "status": "Pendente Retirada",
+      "codigo_retirada": "XVA-002-2604",
+      "data_reserva": "2026-04-13T10:30:00Z",
+      "data_retirada_prevista": "2026-04-13T17:00:00Z"
+    }
+  ]
+}

@@ -1,0 +1,289 @@
+/* ========================================
+   MODO ALTO CONTRASTE - XepaViva
+   Otimizado para legibilidade sob luz solar
+   Paleta: #FFFFFF (fundo) e #000000 (texto/bordas)
+   ======================================== */
+
+/* CONFIGURAÇÃO GERAL */
+body.high-contrast {
+    background-color: #FFFFFF !important;
+    color: #000000 !important;
+    font-weight: 500; /* Texto um pouco mais grosso para melhor legibilidade */
+}
+
+/* ===== CABEÇALHO E NAVEGAÇÃO ===== */
+
+.high-contrast .navbar {
+    background-color: #FFFFFF !important;
+    border-bottom: 3px solid #000000 !important;
+}
+
+.high-contrast .navbar-brand img {
+    filter: invert(1);
+    border: 1px solid #000000;
+}
+
+.high-contrast .nav-link,
+.high-contrast .navbar-brand,
+.high-contrast .navbar-toggler-icon {
+    color: #000000 !important;
+}
+
+.high-contrast .navbar-toggler {
+    border: 2px solid #000000 !important;
+}
+
+.high-contrast .nav-pills .nav-link {
+    border: 2px solid #000000;
+    color: #000000 !important;
+    background-color: transparent;
+    margin: 0 2px;
+}
+
+.high-contrast .nav-pills .nav-link:hover {
+    background-color: #000000;
+    color: #FFFFFF !important;
+}
+
+.high-contrast .nav-pills .nav-link.active {
+    background-color: #000000 !important;
+    color: #FFFFFF !important;
+    border: 2px solid #000000;
+}
+
+.high-contrast .btn-outline-light {
+    color: #000000 !important;
+    border-color: #000000 !important;
+    border-width: 2px;
+}
+
+.high-contrast .btn-outline-light:hover {
+    background-color: #000000;
+    color: #FFFFFF !important;
+}
+
+/* ===== CARDS E CONTAINERS ===== */
+
+.high-contrast .card {
+    background-color: #FFFFFF !important;
+    border: 2px solid #000000 !important;
+    box-shadow: none !important;
+}
+
+.high-contrast .card-title,
+.high-contrast .card-text,
+.high-contrast .card-title .bi,
+.high-contrast .card-body {
+    color: #000000 !important;
+}
+
+.high-contrast .text-muted {
+    color: #000000 !important;
+}
+
+.high-contrast .badge {
+    background-color: #000000 !important;
+    color: #FFFFFF !important;
+    border: 1px solid #000000;
+    font-weight: bold;
+}
+
+.high-contrast .alert {
+    background-color: #FFFFFF !important;
+    border: 2px solid #000000 !important;
+    color: #000000 !important;
+}
+
+/* ===== BOTÕES ===== */
+
+.high-contrast .btn-primary {
+    background-color: #000000 !important;
+    color: #FFFFFF !important;
+    border: 2px solid #000000 !important;
+    font-weight: bold;
+}
+
+.high-contrast .btn-primary:hover {
+    background-color: #333333 !important;
+}
+
+.high-contrast .btn-primary .bi {
+    color: #FFFFFF !important;
+}
+
+.high-contrast .btn-secondary {
+    background-color: #000000 !important;
+    color: #FFFFFF !important;
+    border: 2px solid #000000 !important;
+}
+
+.high-contrast .btn-outline-secondary,
+.high-contrast .btn-outline-danger,
+.high-contrast .btn-outline-success {
+    border-width: 2px !important;
+    border-color: #000000 !important;
+    color: #000000 !important;
+    font-weight: bold;
+}
+
+.high-contrast .btn-success {
+    background-color: #000000 !important;
+    color: #FFFFFF !important;
+    border: 2px solid #000000 !important;
+}
+
+.high-contrast .btn .bi {
+    color: inherit;
+}
+
+/* ===== FORMULÁRIOS ===== */
+
+.high-contrast .form-control,
+.high-contrast .form-select,
+.high-contrast textarea,
+.high-contrast input[type="text"],
+.high-contrast input[type="email"],
+.high-contrast input[type="password"],
+.high-contrast input[type="number"],
+.high-contrast input[type="file"] {
+    background-color: #FFFFFF !important;
+    border: 2px solid #000000 !important;
+    color: #000000 !important;
+    font-weight: 500;
+}
+
+.high-contrast .form-control:focus,
+.high-contrast .form-select:focus {
+    background-color: #F5F5F5 !important;
+    border-color: #000000 !important;
+    box-shadow: 0 0 0 3px #000000;
+    color: #000000 !important;
+}
+
+.high-contrast .form-label {
+    color: #000000 !important;
+    font-weight: bold;
+}
+
+.high-contrast .form-text {
+    color: #000000 !important;
+}
+
+/* ===== TABELAS ===== */
+
+.high-contrast table {
+    border: 2px solid #000000 !important;
+    color: #000000 !important;
+}
+
+.high-contrast th {
+    background-color: #000000 !important;
+    color: #FFFFFF !important;
+    border: 2px solid #000000 !important;
+    font-weight: bold;
+}
+
+.high-contrast td {
+    border: 1px solid #000000 !important;
+    color: #000000 !important;
+}
+
+.high-contrast tr:hover {
+    background-color: #F5F5F5 !important;
+}
+
+/* ===== GRÁFICOS (Chart.js) ===== */
+
+.high-contrast canvas {
+    border: 2px solid #000000 !important;
+}
+
+/* ===== FOOTER ===== */
+
+.high-contrast footer {
+    background-color: #FFFFFF !important;
+    color: #000000 !important;
+    border-top: 2px solid #000000 !important;
+}
+
+/* ===== ÍCONES ===== */
+
+.high-contrast .bi {
+    color: #000000 !important;
+}
+
+.high-contrast .btn-primary .bi,
+.high-contrast .btn-secondary .bi {
+    color: #FFFFFF !important;
+}
+
+/* ===== LINKS ===== */
+
+.high-contrast a {
+    color: #000000 !important;
+    text-decoration: underline;
+    font-weight: bold;
+}
+
+.high-contrast a:hover {
+    color: #333333 !important;
+}
+
+/* ===== ESTADO VAZIO (Empty State) ===== */
+
+.high-contrast .empty-state {
+    background-color: #FFFFFF !important;
+    border: 2px dashed #000000 !important;
+    color: #000000 !important;
+}
+
+/* ===== BREADCRUMBS ===== */
+
+.high-contrast .breadcrumb {
+    background-color: #FFFFFF !important;
+    border: 1px solid #000000;
+    color: #000000 !important;
+}
+
+.high-contrast .breadcrumb-item {
+    color: #000000 !important;
+}
+
+.high-contrast .breadcrumb-item.active {
+    font-weight: bold;
+}
+
+/* ===== TOOLTIPS E POPOVERS ===== */
+
+.high-contrast .tooltip-inner {
+    background-color: #000000 !important;
+    color: #FFFFFF !important;
+    border: 1px solid #000000;
+}
+
+/* ===== SPINNER DE CARREGAMENTO ===== */
+
+.high-contrast .spinner-border {
+    border-color: #000000;
+    border-right-color: transparent;
+}
+
+/* ===== ESTADOS DE VALIDAÇÃO ===== */
+
+.high-contrast .is-valid {
+    border-color: #000000 !important;
+}
+
+.high-contrast .is-invalid {
+    border-color: #000000 !important;
+}
+
+.high-contrast .invalid-feedback {
+    color: #000000 !important;
+    font-weight: bold;
+}
+
+.high-contrast .valid-feedback {
+    color: #000000 !important;
+    font-weight: bold;
+}

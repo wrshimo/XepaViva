@@ -1,0 +1,64 @@
+{
+  "ofertas": [
+    {
+      "id": 1,
+      "feirante_id": 1,
+      "feirante_nome": "Seu Benedito",
+      "feirante_local": "Feira do Porto, Cuiabá",
+      "nome": "Tomate Italiano",
+      "categoria": "Legumes",
+      "preco": 5.00,
+      "peso": 2.5,
+      "descricao": "Caixa com aproximadamente 5kg de tomates maduros, ideais para molhos.",
+      "foto": "https://placehold.co/300x200/198754/FFFFFF?text=Tomate+Italiano",
+      "status": "Disponível",
+      "reservas": 10,
+      "data_criacao": "2026-04-13T10:30:00Z"
+    },
+    {
+      "id": 2,
+      "feirante_id": 1,
+      "feirante_nome": "Seu Benedito",
+      "feirante_local": "Feira do Porto, Cuiabá",
+      "nome": "Cenoura Prata",
+      "categoria": "Legumes",
+      "preco": 3.50,
+      "peso": 3.0,
+      "descricao": "Cenouras frescas, perfeitas para sucos e refogados.",
+      "foto": "https://placehold.co/300x200/FF9800/FFFFFF?text=Cenoura",
+      "status": "Disponível",
+      "reservas": 5,
+      "data_criacao": "2026-04-13T09:15:00Z"
+    },
+    {
+      "id": 3,
+      "feirante_id": 2,
+      "feirante_nome": "Dona Maria",
+      "feirante_local": "Feira de Pinheiros",
+      "nome": "Banana Prata",
+      "categoria": "Frutas",
+      "preco": 5.00,
+      "peso": 2.0,
+      "descricao": "Banana prata dourada, ótima para consumo imediato ou vitaminas.",
+      "foto": "https://placehold.co/300x200/FFD700/FFFFFF?text=Banana+Prata",
+      "status": "Disponível",
+      "reservas": 0,
+      "data_criacao": "2026-04-13T08:00:00Z"
+    },
+    {
+      "id": 4,
+      "feirante_id": 2,
+      "feirante_nome": "Dona Maria",
+      "feirante_local": "Feira de Pinheiros",
+      "nome": "Alface Crespa",
+      "categoria": "Verduras",
+      "preco": 2.50,
+      "peso": 0.5,
+      "descricao": "Alface crespa fresca, perfeita para saladas.",
+      "foto": "https://placehold.co/300x200/228B22/FFFFFF?text=Alface",
+      "status": "Disponível",
+      "reservas": 3,
+      "data_criacao": "2026-04-13T07:30:00Z"
+    }
+  ]
+}

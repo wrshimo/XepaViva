@@ -7,23 +7,24 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <link href="assets/css/style.css" rel="stylesheet">
+    <link href="assets/css/high-contrast.css" rel="stylesheet">
     <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#2ECC71">
 </head>
 <body>
 
-    <header class="navbar navbar-dark bg-dark sticky-top">
+    <header class="navbar navbar-dark bg-success sticky-top">
         <div class="container-fluid">
             <a class="navbar-brand" href="feirante.php">
                 <img src="assets/images/logo-white.svg" alt="Logo XepaViva" width="120">
             </a>
             <div class="d-flex align-items-center">
-                <button id="highContrastToggle" class="btn btn-outline-light me-2">
+                <button id="highContrastToggle" class="btn btn-outline-light me-2" style="min-height: 44px;">
                     <i class="bi bi-sun"></i>
                     <span class="d-none d-sm-inline">Alto Contraste</span>
                 </button>
-                <a href="index.php" class="btn btn-outline-light">Sair</a>
+                <a href="index.php" class="btn btn-outline-light" style="min-height: 44px;">Sair</a>
             </div>
         </div>
     </header>
@@ -85,19 +86,12 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/utilidades.js"></script>
+    <script src="assets/js/high-contrast.js"></script>
+    <script src="assets/js/validacao.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const highContrastToggle = document.getElementById('highContrastToggle');
-            const body = document.body;
-
-            // Verifica o estado no LocalStorage e aplica o tema
-            if (localStorage.getItem('highContrast') === 'true') {
-                body.classList.add('high-contrast');
-            }
-
-            // Alterna o tema e salva o estado
-            highContrastToggle.addEventListener('click', () => {
-                body.classList.toggle('high-contrast');
+            // Gráfico de Receita por Semana
                 localStorage.setItem('highContrast', body.classList.contains('high-contrast'));
             });
         });

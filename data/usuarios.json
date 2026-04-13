@@ -1,0 +1,46 @@
+{
+  "feirantes": [
+    {
+      "id": 1,
+      "nome": "Seu Benedito",
+      "email": "benedito@feira.com",
+      "cpf_cnpj": "123.456.789-00",
+      "tipo": "Feirante",
+      "localidade": "Feira do Porto, Cuiabá - MT",
+      "receita_total": 150.00,
+      "alimentos_salvos_kg": 35,
+      "kits_reservados_hoje": 15
+    },
+    {
+      "id": 2,
+      "nome": "Dona Maria",
+      "email": "maria@feira.com",
+      "cpf_cnpj": "987.654.321-00",
+      "tipo": "Feirante",
+      "localidade": "Feira de Pinheiros",
+      "receita_total": 220.00,
+      "alimentos_salvos_kg": 52,
+      "kits_reservados_hoje": 8
+    }
+  ],
+  "consumidores": [
+    {
+      "id": 101,
+      "nome": "Mariana Silva",
+      "email": "mariana@email.com",
+      "tipo": "Consumidor",
+      "economia_total": 45.00,
+      "alimentos_salvos_kg": 12,
+      "reservas_ativas": 2
+    },
+    {
+      "id": 102,
+      "nome": "João Santos",
+      "email": "joao@email.com",
+      "tipo": "Consumidor",
+      "economia_total": 78.50,
+      "alimentos_salvos_kg": 18,
+      "reservas_ativas": 1
+    }
+  ]
+}

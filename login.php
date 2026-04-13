@@ -26,9 +26,13 @@
                         <h1 class="card-title text-center h3 mb-4">Acesse sua conta</h1>
                         <p class="text-center text-muted">Esta é uma tela de login simulada. Selecione seu perfil para continuar.</p>
                         <div class="d-grid gap-3 mt-4">
-                            <a href="feirante.php" class="btn btn-primary btn-lg">Sou Feirante (Seu Benedito)</a>
-                            <a href="#" class="btn btn-secondary btn-lg">Sou Consumidor (Mariana)</a>
+                            <a href="feirante.php" class="btn btn-primary btn-lg" style="min-height: 48px;">Sou Feirante (Seu Benedito)</a>
+                            <a href="consumidor.php" class="btn btn-secondary btn-lg" style="min-height: 48px;">Sou Consumidor (Mariana)</a>
                         </div>
+                        <hr class="my-4">
+                        <p class="text-center text-muted">
+                            Novo por aqui? <a href="registro.php">Crie sua conta</a>
+                        </p>
                     </div>
                 </div>
                 <div class="text-center mt-3">

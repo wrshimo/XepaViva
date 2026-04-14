@@ -63,7 +63,9 @@
             <div class="card shadow-sm">
                 <div class="card-body">
                     <h5 class="card-title">Sua Economia ao Longo do Tempo</h5>
-                    <canvas id="graficoEconomiaConsumidor"></canvas>
+                    <div class="chart-container" style="position: relative; height:300px">
+                        <canvas id="graficoEconomiaConsumidor"></canvas>
+                    </div>
                 </div>
             </div>
         </section>

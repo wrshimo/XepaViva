@@ -31,8 +31,8 @@
         <div class="container d-flex justify-content-center">
             <ul class="nav nav-pills">
                 <li class="nav-item"><a href="consumidor.php" class="nav-link active" aria-current="page">Painel</a></li>
-                <li class="nav-item"><a href="#" class="nav-link">Buscar Ofertas</a></li>
-                <li class="nav-item"><a href="#" class="nav-link">Minhas Reservas</a></li>
+                <li class="nav-item"><a href="buscar-ofertas.php" class="nav-link">Buscar Ofertas</a></li>
+                <li class="nav-item"><a href="minhas-reservas.php" class="nav-link">Minhas Reservas</a></li>
             </ul>
         </div>
     </nav>
@@ -41,7 +41,7 @@
         <!-- KPIs de Impacto Pessoal -->
         <section class="row mb-4">
             <div class="col-md-6 mb-3">
-                <div class="card text-center shadow-sm">
+                <div class="card text-center shadow-sm h-100">
                     <div class="card-body">
                         <h5 class="card-title"><i class="bi bi-currency-dollar text-success"></i> Sua Economia Total</h5>
                         <p class="card-text fs-4 fw-bold">R$ 45,00</p>
@@ -49,11 +49,21 @@
                 </div>
             </div>
             <div class="col-md-6 mb-3">
-                <div class="card text-center shadow-sm">
+                <div class="card text-center shadow-sm h-100">
                     <div class="card-body">
                         <h5 class="card-title"><i class="bi bi-leaf text-primary"></i> Alimentos que Você Salvou</h5>
                         <p class="card-text fs-4 fw-bold">12 Kg</p>
                     </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Gráfico de Impacto -->
+        <section class="mb-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Sua Economia ao Longo do Tempo</h5>
+                    <canvas id="graficoEconomiaConsumidor"></canvas>
                 </div>
             </div>
         </section>
@@ -68,30 +78,10 @@
                             <h5 class="card-title mb-1">Kit de Tomate Italiano</h5>
                             <p class="card-text mb-0"><small class="text-muted">Feirante: Seu Benedito | Retirar na Feira da Vila Madalena</small></p>
                          </div>
-                         <a href="#" class="btn btn-success" style="min-height: 44px;">Ver Código de Retirada</a>
+                         <a href="codigo-retirada.php" class="btn btn-success" style="min-height: 44px;">Ver Código de Retirada</a>
                      </div>
                  </div>
              </div>
-        </section>
-
-        <!-- Ofertas Próximas -->
-        <section>
-            <h2 class="h3 mb-3">Ofertas Fresquinhas Perto de Você</h2>
-            <div class="card mb-3 shadow-sm">
-                <div class="row g-0">
-                    <div class="col-md-4">
-                        <img src="https://placehold.co/300x200/198754/FFFFFF?text=Banana" class="img-fluid rounded-start" alt="Foto da Banana Prata">
-                    </div>
-                    <div class="col-md-8">
-                        <div class="card-body">
-                            <h5 class="card-title">Banana Prata</h5>
-                            <p class="card-text"><small class="text-muted">Feirante: Dona Maria | Feira de Pinheiros</small></p>
-                            <p class="card-text fs-5 fw-bold text-success">R$ 5,00</p>
-                            <a href="detalhe_oferta.php" class="btn btn-outline-success" style="min-height: 44px;">Ver Detalhes e Reservar</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </section>
 
     </main>
@@ -101,7 +91,36 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="assets/js/utilidades.js"></script>
     <script src="assets/js/high-contrast.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const ctx = document.getElementById('graficoEconomiaConsumidor').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'],
+                    datasets: [{
+                        label: 'Economia (R$)',
+                        data: [12, 19, 3, 5, 2, 3],
+                        borderColor: '#2ECC71',
+                        backgroundColor: 'rgba(46, 204, 113, 0.1)',
+                        fill: true,
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        });
+    </script>
 </body>
 </html>

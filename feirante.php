@@ -9,10 +9,10 @@
     <link href="assets/css/style.css" rel="stylesheet">
     <link href="assets/css/high-contrast.css" rel="stylesheet">
     <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml">
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#2ECC71">
 </head>
 <body>
+    <!-- Toast Container -->
+    <div id="toastContainer" class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 11"></div>
 
     <header class="navbar navbar-dark bg-success sticky-top">
         <div class="container-fluid">
@@ -43,7 +43,7 @@
         <!-- KPIs de Impacto -->
         <section class="row mb-4">
             <div class="col-md-4 mb-3">
-                <div class="card text-center shadow-sm">
+                <div class="card text-center shadow-sm h-100">
                     <div class="card-body">
                         <h5 class="card-title"><i class="bi bi-cash-coin"></i> Receita com a Xepa</h5>
                         <p class="card-text fs-4 fw-bold">R$ 150,00</p>
@@ -51,7 +51,7 @@
                 </div>
             </div>
             <div class="col-md-4 mb-3">
-                <div class="card text-center shadow-sm">
+                <div class="card text-center shadow-sm h-100">
                     <div class="card-body">
                         <h5 class="card-title"><i class="bi bi-box-seam"></i> Alimentos Salvos</h5>
                         <p class="card-text fs-4 fw-bold">35 Kg</p>
@@ -59,7 +59,7 @@
                 </div>
             </div>
             <div class="col-md-4 mb-3">
-                <div class="card text-center shadow-sm">
+                <div class="card text-center shadow-sm h-100">
                     <div class="card-body">
                         <h5 class="card-title"><i class="bi bi-cart-check"></i> Kits Reservados Hoje</h5>
                         <p class="card-text fs-4 fw-bold">15</p>
@@ -68,26 +68,14 @@
             </div>
         </section>
 
-        <!-- Gráfico e Ação Rápida -->
-        <section class="row mb-4">
-            <div class="col-md-8 mb-3">
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <h5 class="card-title">Receita por Semana</h5>
-                        <div style="position: relative; height: 300px;">
-                            <canvas id="receitaChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4 mb-3">
-                <div class="card shadow-sm h-100">
-                    <div class="card-body d-flex flex-column justify-content-center text-center">
-                        <h5 class="card-title">Pronto para vender mais?</h5>
-                        <a href="cadastrar_oferta.php" class="btn btn-primary btn-lg">
-                            <i class="bi bi-plus-circle"></i> Anunciar Nova Xepa
-                        </a>
-                    </div>
+        <!-- Ação Rápida -->
+        <section class="mb-4">
+            <div class="card shadow-sm text-center">
+                 <div class="card-body">
+                    <h5 class="card-title">Pronto para vender mais?</h5>
+                    <a href="cadastrar_oferta.php" class="btn btn-primary btn-lg">
+                        <i class="bi bi-plus-circle"></i> Anunciar Nova Xepa
+                    </a>
                 </div>
             </div>
         </section>
@@ -95,7 +83,7 @@
         <!-- Gerenciamento de Ofertas -->
         <section>
             <h2 class="h3 mb-3">Gerenciamento Rápido de Ofertas</h2>
-            <div class="card mb-3 shadow-sm">
+            <div class="card mb-3 shadow-sm" id="oferta-1">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
@@ -103,8 +91,8 @@
                             <span class="badge bg-success">10 Reservas</span>
                         </div>
                         <div class="btn-group">
-                            <a href="#" class="btn btn-outline-secondary"><i class="bi bi-pencil"></i> <span class="d-none d-sm-inline">Editar</span></a>
-                            <a href="#" class="btn btn-outline-danger"><i class="bi bi-trash"></i> <span class="d-none d-sm-inline">Excluir</span></a>
+                            <a href="cadastrar_oferta.php?id=1" class="btn btn-outline-secondary"><i class="bi bi-pencil"></i> <span class="d-none d-sm-inline">Editar</span></a>
+                            <a href="#" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" data-oferta-id="1"><i class="bi bi-trash"></i> <span class="d-none d-sm-inline">Excluir</span></a>
                         </div>
                     </div>
                 </div>
@@ -112,6 +100,25 @@
         </section>
 
     </main>
+    
+    <!-- Modal de Confirmação de Exclusão -->
+    <div class="modal fade" id="confirmDeleteModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirmar Exclusão</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Tem certeza de que deseja excluir esta oferta? Esta ação não pode ser desfeita.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Excluir</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <footer class="mt-5 text-muted text-center">
         <p>&copy; 2026 XepaViva. Todos os direitos reservados.</p>
@@ -119,28 +126,33 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="assets/js/utilidades.js"></script>
     <script src="assets/js/high-contrast.js"></script>
+    <script src="assets/js/toast.js"></script>
     <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // Lógica do Modal de Exclusão
+            const confirmDeleteModal = document.getElementById('confirmDeleteModal');
+            const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+            let ofertaParaExcluirId = null;
 
-            // Gráfico de Receita por Semana
-            const ctx = document.getElementById('receitaChart').getContext('2d');
-            const receitaChart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: ['Semana 1', 'Semana 2', 'Semana 3', 'Semana 4'],
-                    datasets: [{
-                        label: 'Receita (R$)',
-                        data: [50, 75, 120, 150],
-                        backgroundColor: 'rgba(25, 135, 84, 0.2)',
-                        borderColor: 'rgba(25, 135, 84, 1)',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    scales: { y: { beginAtZero: true } },
-                    responsive: true,
-                    maintainAspectRatio: false
+            confirmDeleteModal.addEventListener('show.bs.modal', (event) => {
+                const button = event.relatedTarget;
+                ofertaParaExcluirId = button.getAttribute('data-oferta-id');
+            });
+
+            confirmDeleteBtn.addEventListener('click', () => {
+                if (ofertaParaExcluirId) {
+                    const ofertaElement = document.getElementById('oferta-' + ofertaParaExcluirId);
+                    if (ofertaElement) {
+                        ofertaElement.remove();
+                    }
+                    
+                    const modal = bootstrap.Modal.getInstance(confirmDeleteModal);
+                    modal.hide();
+
+                    showToast('Oferta excluída com sucesso!', 'success');
+                    ofertaParaExcluirId = null;
                 }
             });
         });

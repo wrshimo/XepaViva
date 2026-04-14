@@ -59,6 +59,51 @@
       "status": "Disponível",
       "reservas": 3,
       "data_criacao": "2026-04-13T07:30:00Z"
+    },
+    {
+      "id": 5,
+      "feirante_id": 3,
+      "feirante_nome": "Dona Sônia",
+      "feirante_local": "Feira da Lapa",
+      "nome": "Kit Folhas Verdes",
+      "categoria": "Verduras",
+      "preco": 6.00,
+      "peso": 1.0,
+      "descricao": "Um maço de couve e um de espinafre frescos.",
+      "foto": "https://placehold.co/300x200/006400/FFFFFF?text=Kit+Folhas",
+      "status": "Disponível",
+      "reservas": 8,
+      "data_criacao": "2026-04-14T08:00:00Z"
+    },
+    {
+      "id": 6,
+      "feirante_id": 1,
+      "feirante_nome": "Seu Benedito",
+      "feirante_local": "Feira do Porto, Cuiabá",
+      "nome": "Kit Raízes",
+      "categoria": "Legumes",
+      "preco": 7.50,
+      "peso": 3.0,
+      "descricao": "Aproximadamente 1.5kg de mandioca e 1.5kg de batata-doce.",
+      "foto": "https://placehold.co/300x200/8B4513/FFFFFF?text=Kit+Raizes",
+      "status": "Disponível",
+      "reservas": 2,
+      "data_criacao": "2026-04-14T09:00:00Z"
+    },
+    {
+      "id": 7,
+      "feirante_id": 2,
+      "feirante_nome": "Dona Maria",
+      "feirante_local": "Feira de Pinheiros",
+      "nome": "Kit Frutas da Estação",
+      "categoria": "Frutas",
+      "preco": 10.00,
+      "peso": 2.0,
+      "descricao": "Uma manga palmer e um mamão formosa maduros.",
+      "foto": "https://placehold.co/300x200/FF4500/FFFFFF?text=Kit+Frutas",
+      "status": "Disponível",
+      "reservas": 12,
+      "data_criacao": "2026-04-14T09:30:00Z"
     }
   ]
 }

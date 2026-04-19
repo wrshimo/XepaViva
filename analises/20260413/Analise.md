@@ -144,7 +144,7 @@ Sprint 4 (Semana 7-8: 26/05 - 29/05) | Segurança & Go-Live
 ├─ Testes de integração e segurança
 ├─ Documentação da API (OpenAPI)
 ├─ Deploy em staging
-└─ 🎯 OBJETIVO: Aplicação pronta para o lançamento beta.
+└─ 🎯 OBJETGEO: Aplicação pronta para o lançamento beta.
 ```
 
 ---

@@ -217,7 +217,7 @@ Tempo total: 20 min
 ## 📞 Contato e Dúvidas
 
 - **Análise técnica:** Data 13/04/2026 | Versão 1.0
-- **Documentação:** Ambos arquivos em `/analises/`
+- **Documentação:** Ambos arquivos em `/analises/20260413/`
 - **Próximo passo:** Executar Sprint 0 checklist
 
 ---

@@ -2,9 +2,9 @@
   "ofertas": [
     {
       "id": 1,
-      "feirante_id": 101,
+      "feirante_id": 1,
       "feirante_nome": "Seu Benedito",
-      "feirante_local": "Feira do Porto, Cuiabá",
+      "feirante_local": "Feira do Porto, Cuiabá - MT",
       "nome": "Kit Tomate Italiano (1kg)",
       "descricao": "Tomates italianos maduros, perfeitos para molhos e saladas. Cultivados com carinho e sem agrotóxicos.",
       "foto": "https://placehold.co/300x200/198754/FFFFFF?text=Tomate+Italiano",
@@ -17,9 +17,9 @@
     },
     {
       "id": 2,
-      "feirante_id": 102,
-      "feirante_nome": "Dona Lúcia",
-      "feirante_local": "Feira do Pacaembu",
+      "feirante_id": 2,
+      "feirante_nome": "Dona Maria",
+      "feirante_local": "Feira de Pinheiros",
       "nome": "Cesta de Bananas Nanica",
       "descricao": "Bananas nanicas docinhas, ótimas para vitaminas ou para comer ao natural.",
       "foto": "https://placehold.co/300x200/FFD700/FFFFFF?text=Banana+Nanica",
@@ -32,9 +32,9 @@
     },
     {
       "id": 3,
-      "feirante_id": 101,
+      "feirante_id": 1,
       "feirante_nome": "Seu Benedito",
-      "feirante_local": "Feira do Porto, Cuiabá",
+      "feirante_local": "Feira do Porto, Cuiabá - MT",
       "nome": "Pé de Alface Crespa",
       "descricao": "Alface crespa fresquinha, colhida hoje de manhã. Crocante e saborosa.",
       "foto": "https://placehold.co/300x200/228B22/FFFFFF?text=Alface+Crespa",
@@ -47,7 +47,7 @@
     },
     {
       "id": 4,
-      "feirante_id": 103,
+      "feirante_id": 3,
       "feirante_nome": "Família Tanaka",
       "feirante_local": "Feira da Liberdade",
       "nome": "Mix de Legumes Orientais",
@@ -56,22 +56,22 @@
       "preco": "8.00",
       "quantidade_inicial": 15,
       "quantidade_disponivel": 10,
-      "disponivel": true,
+      "disponivel": false,
       "categoria": "Legumes",
       "reservas": 5
     },
     {
       "id": 5,
-      "feirante_id": 102,
-      "feirante_nome": "Dona Lúcia",
-      "feirante_local": "Feira do Pacaembu",
+      "feirante_id": 2,
+      "feirante_nome": "Dona Maria",
+      "feirante_local": "Feira de Pinheiros",
       "nome": "Saco de Laranjas Pêra (2kg)",
       "descricao": "Laranjas doces e suculentas, perfeitas para suco ou consumo in natura.",
       "foto": "https://placehold.co/300x200/FF4500/FFFFFF?text=Laranja+Pera",
       "preco": "6.00",
       "quantidade_inicial": 25,
       "quantidade_disponivel": 0,
-      "disponivel": false,
+      "disponivel": true,
       "categoria": "Frutas",
       "reservas": 25
     }

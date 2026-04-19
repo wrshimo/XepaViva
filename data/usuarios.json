@@ -21,11 +21,22 @@
       "receita_total": 220.00,
       "alimentos_salvos_kg": 52,
       "kits_reservados_hoje": 8
+    },
+    {
+      "id": 3,
+      "nome": "Família Tanaka",
+      "email": "tanaka@feira.com",
+      "cpf_cnpj": "111.222.333-44",
+      "tipo": "Feirante",
+      "localidade": "Feira da Liberdade",
+      "receita_total": 0,
+      "alimentos_salvos_kg": 0,
+      "kits_reservados_hoje": 0
     }
   ],
   "consumidores": [
     {
-      "id": 101,
+      "id": 4,
       "nome": "Mariana Silva",
       "email": "mariana@email.com",
       "tipo": "Consumidor",
@@ -34,7 +45,7 @@
       "reservas_ativas": 2
     },
     {
-      "id": 102,
+      "id": 5,
       "nome": "João Santos",
       "email": "joao@email.com",
       "tipo": "Consumidor",

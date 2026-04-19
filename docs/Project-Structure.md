@@ -28,6 +28,9 @@ Este documento descreve a organização dos diretórios e arquivos do projeto, e
 │   ├── ofertas.json
 │   └── reservas.json
 │
+├── 📁 database/                 # Definição e esquema do banco de dados.
+│   └── schema.sql              # Script SQL para criar a estrutura e popular as tabelas.
+│
 ├── 📁 docs/                     # Documentação oficial do projeto.
 │   ├── Jornada.md
 │   ├── Project-Structure.md    # Este arquivo.

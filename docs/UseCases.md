@@ -42,19 +42,27 @@
     *   **FE01.1 - Falha na Validação (Passo 5):** Se os dados forem inválidos, o sistema não prossegue e destaca os campos com erros.
 
 **UC-02: Reservar Kit**
-*   **Status do Protótipo:** ✅ **Prototipado.** O fluxo de buscar, ver detalhes e (simuladamente) reservar um kit está completo.
+*   **Status do Protótipo:** ✅ **Parcialmente Prototipado.** O fluxo de busca e visualização está completo. A lógica de reserva foi simulada, mas agora precisa ser implementada para refletir o novo modelo de dados.
 *   **Atores:** Consumidor.
-*   **Resumo:** Permite que um consumidor encontre e reserve um kit de alimentos para retirada futura.
-*   **Pré-condição:** Existe pelo menos um kit com o status "Disponível".
+*   **Resumo:** Permite que um consumidor encontre, reserve um kit de alimentos e receba um código único para retirada.
+*   **Pré-condição:** Existe pelo menos uma oferta com `quantidade_disponivel` > 0.
 *   **Fluxo Principal:**
-    1.  O Consumidor navega pela lista de kits disponíveis (`buscar-ofertas.php`).
-    2.  O Consumidor seleciona um kit de interesse para ver os detalhes.
-    3.  O Consumidor aciona la opção "Reservar Kit".
-    4.  O sistema realiza uma verificação final de disponibilidade (simulada).
-    5.  O sistema atualiza o status do kit para "Reservado".
-    6.  O sistema gera um comprovante de reserva (e.g., um código de retirada).
-    7.  O sistema notifica o Feirante sobre a nova reserva.
-*   **Pós-condição:** O kit selecionado está associado ao Consumidor.
+    1.  O Consumidor navega pela lista de ofertas disponíveis (`buscar-ofertas.php`).
+    2.  O Consumidor seleciona uma oferta de interesse para ver os detalhes.
+    3.  O Consumidor aciona a opção "Reservar Kit".
+    4.  O sistema valida a disponibilidade da oferta no banco de dados.
+    5.  O sistema cria um novo registro na tabela `reservas` com o status inicial **`Pendente`**.
+    6.  O sistema gera um **`codigo_retirada`** único (formato `XV-XXXX`) e o associa à reserva.
+    7.  O sistema exibe o `codigo_retirada` e os detalhes da reserva para o Consumidor, com o status **`Aguardando Retirada`**.
+    8.  O sistema decrementa a `quantidade_disponivel` na tabela `ofertas`.
+    9.  O sistema notifica o Feirante sobre a nova reserva (mecanismo a ser definido: webhook, push, etc.).
+*   **Pós-condição:** A reserva foi criada, a quantidade da oferta foi atualizada e o consumidor possui um código para a retirada.
+*   **Fluxos de Exceção e Alternativos:**
+    *   **FE02.1 - Oferta Indisponível (Passo 4):** Se, no momento da reserva, a `quantidade_disponivel` for zero, o sistema informa ao Consumidor que o item não está mais disponível e não prossegue.
+    *   **FA02.1 - Cancelamento pelo Consumidor:** O Consumidor pode, a qualquer momento antes da retirada, cancelar a reserva. O status da reserva é alterado para **`Cancelada pelo Consumidor`** e a `quantidade_disponivel` na oferta é incrementada de volta.
+    *   **FA02.2 - Cancelamento pelo Feirante:** O Feirante pode cancelar uma reserva. O status é alterado para **`Cancelada pelo Feirante`**, a `quantidade_disponivel` é incrementada e o Consumidor deve ser notificado.
+    *   **FA02.3 - Conclusão da Retirada:** O Feirante, ao receber o `codigo_retirada`, marca a reserva como **`Concluida`**. A `data_retirada_efetiva` é registrada.
+    *   **FA02.4 - Não Comparecimento:** Após um período definido, se o Consumidor não retirar o kit, o Feirante pode marcar a reserva como **`Nao Compareceu`**.
 
 **UC-03: Gerenciar Ofertas**
 *   **Status do Protótipo:** ✅ **Prototipado.** A página `minhas-ofertas.php` lista as ofertas do feirante, permitindo acesso para edição e remoção (simulada).

@@ -97,6 +97,14 @@ A arquitetura final da aplicação integrada seguirá o seguinte modelo:
 *   **Camada de Aplicação (Backend)**: Uma **API RESTful** desenvolvida em **PHP 8.x** puro, utilizando Programação Orientada a Objetos (POO) para encapsular as regras de negócio.
 *   **Camada de Persistência (Dados)**: Banco de dados relacional **MariaDB** para armazenamento centralizado e **LocalStorage** para persistência temporária no cliente (essencial para a funcionalidade offline).
 
+### 6.1 Modelo de Dados
+
+A persistência dos dados no MariaDB é estruturada em torno de três tabelas principais, que representam as entidades centrais do sistema:
+
+*   **`usuarios`**: Tabela consolidada que armazena os dados de **Feirantes** e **Consumidores**, diferenciados pela coluna `tipo`.
+*   **`ofertas`**: Contém todos os kits de "xepa" anunciados pelos feirantes, incluindo detalhes como preço, quantidade e status de disponibilidade.
+*   **`reservas`**: Registra o ciclo de vida de uma reserva feita por um consumidor, com status detalhados (de 'Pendente' a 'Concluída' ou 'Cancelada') e um `codigo_retirada` único.
+
 ---
 
 ## 7. Segurança e Dados

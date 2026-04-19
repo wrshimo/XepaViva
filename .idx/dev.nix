@@ -22,11 +22,18 @@
     workspace = {
       onCreate = {
         # Open editors for the following files by default, if they exist:
-        default.openFiles = ["index.php"];
+        default.openFiles = ["public/index.php"];
       };
       # Runs when a workspace is (re)started
-      onStart= {
-        run-server = "php -S localhost:3000 -t ./";
+      onStart = {
+        # Processo 1: Inicia o servidor da aplicação
+        run-app-server = "php -S localhost:3000 -t public/";
+
+        # Processo 2: Inicia o servidor do phpMyAdmin
+        run-phpmyadmin = "php -S localhost:3001 -t phpmyadmin/";
+
+        # Processo 3: Exibe mensagens de boas-vindas
+        welcome-message = "echo '🚀 App rodando em http://localhost:3000 | 🐘 phpMyAdmin em http://localhost:3001'";
       };
     };
   };

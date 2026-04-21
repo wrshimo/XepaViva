@@ -1,0 +1,183 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apresentação XepaViva</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #000;
+            color: #fff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        #slide-container {
+            width: 100%;
+            height: 100%;
+            position: relative; /* Necessário para posicionar as imagens */
+            cursor: pointer;
+        }
+
+        /* Estilo para as duas imagens do slide - Cross-fade */
+        .slide-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            /* A transição agora é no opacity */
+            transition: opacity 0.6s ease-in-out;
+        }
+
+        #slide-counter {
+            position: fixed;
+            bottom: 20px;
+            right: 30px;
+            font-size: 1.2em;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 5px 15px;
+            border-radius: 15px;
+            z-index: 10;
+        }
+
+        html:not(:fullscreen)::before {
+            content: 'Clique ou pressione Espaço para iniciar em tela cheia';
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0,0,0,0.7);
+            padding: 10px 20px;
+            border-radius: 10px;
+            z-index: 20;
+            animation: fadeInMessage 1s ease-in-out;
+            pointer-events: none;
+        }
+
+        @keyframes fadeInMessage {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Contêiner com duas imagens para o efeito de cross-fade -->
+    <div id="slide-container">
+        <img id="slide-image-1" class="slide-image" src="" alt="Slide da Apresentação">
+        <img id="slide-image-2" class="slide-image" src="" alt="Slide da Apresentação">
+    </div>
+
+    <div id="slide-counter"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const images = [
+                "xepa-01.jpeg", "xepa-02.jpeg", "xepa-03.jpeg", "xepa-04.jpeg", "xepa-05.jpeg", 
+                "xepa-06.jpeg", "xepa-07.jpeg", "xepa-08.jpeg", "xepa-09.jpeg", "xepa-10.png", "xepa-11.jpeg"
+            ];
+
+            let currentSlideIndex = -1;
+            let firstInteraction = true;
+            const slideCounter = document.getElementById('slide-counter');
+
+            // Referências para as duas imagens e qual está ativa
+            const img1 = document.getElementById('slide-image-1');
+            const img2 = document.getElementById('slide-image-2');
+            let activeImage = img1;
+            let inactiveImage = img2;
+
+            function preloadAllImages() {
+                images.forEach(src => {
+                    const img = new Image();
+                    img.src = src;
+                });
+            }
+
+            function requestFullScreen() {
+                const docEl = document.documentElement;
+                const request = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullscreen || docEl.msRequestFullscreen;
+                if (request) {
+                    request.call(docEl).catch(err => console.log(`Erro: ${err.message}`))
+                }
+            }
+
+            // --- Lógica de Cross-fade ---
+            function showSlide(index) {
+                if (index < 0) index = 0;
+                if (index >= images.length) index = images.length - 1;
+                if (index === currentSlideIndex) return;
+                
+                currentSlideIndex = index;
+                
+                // 1. Define a imagem inativa para ser o novo slide
+                inactiveImage.src = images[currentSlideIndex];
+                
+                // 2. Faz o cross-fade trocando a opacidade de ambas
+                activeImage.style.opacity = 0;
+                inactiveImage.style.opacity = 1;
+
+                // 3. Inverte as referências para a próxima transição
+                [activeImage, inactiveImage] = [inactiveImage, activeImage];
+
+                updateCounter();
+            }
+
+            function nextSlide() {
+                if (currentSlideIndex < images.length - 1) {
+                    showSlide(currentSlideIndex + 1);
+                }
+            }
+
+            function prevSlide() {
+                if (currentSlideIndex > 0) {
+                    showSlide(currentSlideIndex - 1);
+                }
+            }
+            
+            function updateCounter() {
+                slideCounter.textContent = `${currentSlideIndex + 1} / ${images.length}`;
+            }
+
+            function handleUserInteraction(e) {
+                if (firstInteraction) {
+                    requestFullScreen();
+                    firstInteraction = false;
+                    return;
+                }
+
+                const isRightSideClick = e.type === 'click' && e.clientX > window.innerWidth / 2;
+                const isNextKey = e.code === 'ArrowRight' || e.code === 'Space';
+
+                if (isRightSideClick || isNextKey) {
+                    nextSlide();
+                } else if (e.type === 'click' || e.code === 'ArrowLeft') {
+                    prevSlide();
+                }
+            }
+
+            // --- Inicialização ---
+            function init() {
+                document.addEventListener('keydown', handleUserInteraction);
+                document.addEventListener('click', handleUserInteraction);
+
+                // Prepara o estado inicial das imagens para o primeiro slide
+                img1.style.opacity = 1;
+                img2.style.opacity = 0;
+
+                preloadAllImages();
+                showSlide(0);
+            }
+
+            init();
+        });
+    </script>
+</body>
+</html>

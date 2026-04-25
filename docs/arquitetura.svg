@@ -1,0 +1,130 @@
+<svg width="800" height="600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
+    <defs>
+        <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#2C3E50" />
+        </marker>
+    </defs>
+    <style>
+        .box {
+            stroke: #2C3E50;
+            stroke-width: 2;
+            fill: #F8F9FA;
+        }
+        .layer-box {
+            stroke: #E67E22;
+            stroke-width: 1.5;
+            stroke-dasharray: 4;
+            fill: #FFFFFF;
+        }
+        .pwa-box {
+            stroke: #2ECC71;
+            stroke-width: 1.5;
+            fill: #FFFFFF;
+        }
+        .title {
+            font-family: "Segoe UI", Roboto, sans-serif;
+            font-size: 18px;
+            font-weight: bold;
+            fill: #2C3E50;
+            text-anchor: middle;
+        }
+        .label {
+            font-family: "Segoe UI", Roboto, sans-serif;
+            font-size: 14px;
+            fill: #2C3E50;
+            text-anchor: middle;
+        }
+        .flow-line {
+            stroke: #2C3E50;
+            stroke-width: 1.5;
+            marker-end: url(#arrow);
+            fill: none;
+        }
+        .offline-flow {
+            stroke: #E67E22;
+            stroke-width: 1.5;
+            marker-end: url(#arrow);
+            fill: none;
+            stroke-dasharray: 5, 5;
+        }
+    </style>
+
+    <!-- Main Title -->
+    <text x="400" y="30" class="title" font-size="24">Arquitetura da Aplicação - XepaViva</text>
+
+    <!-- Client-Side (PWA) -->
+    <g id="client-side">
+        <rect x="50" y="80" width="300" height="450" class="box" rx="10" />
+        <text x="200" y="110" class="title">CLIENT (PWA)</text>
+
+        <rect x="70" y="140" width="260" height="100" class="pwa-box" rx="5" />
+        <text x="200" y="160" class="label" font-weight="bold">Interface do Usuário</text>
+        <text x="200" y="185" class="label">HTML5, CSS3, Bootstrap 5</text>
+        <text x="200" y="210" class="label">Vanilla JavaScript</text>
+
+        <rect x="70" y="260" width="260" height="80" class="pwa-box" rx="5" />
+        <text x="200" y="280" class="label" font-weight="bold">Service Worker</text>
+        <text x="200" y="305" class="label">Cache (Stale-While-Revalidate)</text>
+        <text x="200" y="325" class="label">Offline First</text>
+
+        <rect x="70" y="360" width="260" height="60" class="pwa-box" rx="5" />
+        <text x="200" y="380" class="label" font-weight="bold">Armazenamento Local</text>
+        <text x="200" y="405" class="label">LocalStorage (Dados Offline)</text>
+        
+        <text x="200" y="460" class="label">Dispositivo do Usuário</text>
+        <text x="200" y="480" class="label">(Navegador Web)</text>
+    </g>
+
+    <!-- Server-Side -->
+    <g id="server-side">
+        <rect x="450" y="80" width="300" height="450" class="box" rx="10" />
+        <text x="600" y="110" class="title">SERVER (Backend)</text>
+
+        <rect x="470" y="140" width="260" height="100" class="layer-box" rx="5" />
+        <text x="600" y="170" class="label" font-weight="bold">Camada de Aplicação</text>
+        <text x="600" y="195" class="label">RESTful API (PHP 8+ OOP)</text>
+        <text x="600" y="215" class="label">Endpoints (/ofertas, /usuarios)</text>
+
+        <rect x="470" y="260" width="260" height="80" class="layer-box" rx="5" />
+        <text x="600" y="290" class="label" font-weight="bold">Camada de Serviço</text>
+        <text x="600" y="315" class="label">Lógica de Negócio</text>
+
+        <rect x="470" y="360" width="260" height="80" class="layer-box" rx="5" />
+        <text x="600" y="390" class="label" font-weight="bold">Camada de Persistência</text>
+        <text x="600" y="415" class="label">PDO (Prepared Statements)</text>
+        
+         <g id="database">
+            <ellipse cx="600" cy="495" rx="100" ry="30" class="box" />
+            <text x="600" y="490" class="label" font-weight="bold">Banco de Dados</text>
+            <text x="600" y="510" class="label">MariaDB</text>
+        </g>
+    </g>
+
+    <!-- Data Flow Arrows -->
+    <!-- Client to Server -->
+    <path class="flow-line" d="M 355, 190 C 400, 190, 410, 190, 445, 190" />
+    <text x="400" y="185" class="label" font-size="12">Requisição HTTP</text>
+    <text x="400" y="202" class="label" font-size="12">(Online)</text>
+
+
+    <!-- Server to Client -->
+    <path class="flow-line" d="M 445, 210 C 410, 210, 400, 210, 355, 210" />
+    <text x="400" y="225" class="label" font-size="12">Resposta JSON</text>
+
+    <!-- Server Layers Flow -->
+    <path class="flow-line" d="M 600, 240 L 600, 260" />
+    <path class="flow-line" d="M 600, 340 L 600, 360" />
+    <path class="flow-line" d="M 600, 440 L 600, 465" />
+    
+    <!-- Offline Flow -->
+    <path class="offline-flow" d="M 180, 240 L 180, 260" />
+    <text x="140" y="255" class="label" font-size="12" fill="#C0392B">Intercepta</text>
+    <path class="offline-flow" d="M 220, 260 L 220, 240" />
+
+    <path class="offline-flow" d="M 150,300 C 120, 300, 120, 360, 150, 360" />
+    <text x="95" y="335" class="label" font-size="12" fill="#C0392B">Salva</text>
+
+    <path class="offline-flow" d="M 250, 360 C 280, 360, 280, 300, 250, 300" />
+    <text x="300" y="335" class="label" font-size="12" fill="#C0392B">Sincroniza</text>
+    
+</svg>

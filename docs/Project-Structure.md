@@ -35,6 +35,7 @@ Este documento descreve a organização dos diretórios e arquivos do projeto, e
 │   ├── Jornada.md
 │   ├── Project-Structure.md    # Este arquivo.
 │   ├── Requisitos.md
+│   ├── arquitetura.svg
 │   └── UseCases.md
 │
 ├── .gitignore                  # Especifica arquivos a serem ignorados pelo Git.
@@ -63,3 +64,35 @@ A arquitetura atual do frontend foi projetada para ser um **protótipo de alta f
 -   **Simulação de Backend:** A interação com o "backend" é simulada através de `fetch()` para os arquivos locais `.json`, e o "salvamento" de dados é confirmado via `console.log()`. Isso permitiu validar todos os fluxos de usuário sem escrever uma linha de código de servidor.
 
 Esta abordagem garantiu que o **Sprint 0** fosse concluído rapidamente, resultando em um protótipo robusto que serve como um "contrato" visual para o desenvolvimento do backend.
+
+## 🏛️ Arquitetura da Aplicação
+
+A arquitetura do XepaViva é projetada para ser uma Progressive Web App (PWA) robusta, com uma clara separação entre o cliente (frontend) e o servidor (backend), seguindo uma abordagem de *offline-first*.
+
+![Arquitetura da Aplicação](arquitetura.svg)
+
+### Cliente (PWA)
+
+O lado do cliente é construído como uma PWA para garantir uma experiência de usuário rica, responsiva e funcional mesmo sem conexão com a internet.
+
+-   **Interface do Usuário (UI):** Desenvolvida com **HTML5, CSS3, e Bootstrap 5**, focando em uma experiência mobile-first e acessível. A lógica da interface é manipulada por **Vanilla JavaScript**, que interage com o DOM e os serviços do PWA.
+-   **Service Worker:** Atua como um proxy entre a aplicação, o navegador e a rede. É responsável por:
+    -   **Cache:** Implementa a estratégia *Stale-While-Revalidate* para ativos estáticos (HTML, CSS, JS), servindo-os rapidamente do cache enquanto busca atualizações em segundo plano.
+    -   **Offline First:** Permite que a aplicação funcione offline, interceptando requisições e servindo respostas do cache quando a rede não está disponível.
+-   **Armazenamento Local (LocalStorage):** Utilizado para persistir dados gerados pelo usuário enquanto offline (como o cadastro de uma nova oferta). Esses dados são mantidos localmente até que a conexão com a internet seja restabelecida, momento em que são sincronizados com o servidor.
+
+### Servidor (Backend)
+
+O backend é uma API RESTful construída em **PHP 8+** puro, seguindo os princípios da Programação Orientada a Objetos (OOP) e uma arquitetura em camadas para garantir desacoplamento e manutenibilidade.
+
+-   **Camada de Aplicação (API):** Expõe os endpoints RESTful (ex: `/ofertas`, `/usuarios`) que o cliente consome. É responsável por receber as requisições HTTP, autenticar o usuário e orquestrar a resposta.
+-   **Camada de Serviço:** Contém a lógica de negócio da aplicação. Processa os dados recebidos da camada de API, aplica as regras de negócio (validações, cálculos, etc.) e coordena o acesso aos dados.
+-   **Camada de Persistência:** Abstrai a comunicação com o banco de dados. Utiliza a extensão **PDO do PHP com *prepared statements*** para todas as operações de banco de dados, prevenindo vulnerabilidades como SQL Injection.
+-   **Banco de Dados:** **MariaDB** é o sistema de gerenciamento de banco de dados escolhido para armazenar todos os dados da aplicação, como usuários, ofertas e reservas.
+
+### Fluxo de Dados
+
+1.  **Online:** O cliente envia requisições HTTP para a API RESTful no servidor. O servidor processa a requisição através de suas camadas e retorna uma resposta em formato JSON.
+2.  **Offline:** Quando o cliente está offline, o Service Worker intercepta as requisições.
+    -   Para leitura de dados (GET), ele retorna os dados cacheados.
+    -   Para escrita de dados (POST, PUT), ele armazena a requisição no **LocalStorage**. Assim que a conexão é restaurada, o Service Worker sincroniza os dados pendentes com o servidor.

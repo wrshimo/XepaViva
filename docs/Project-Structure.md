@@ -8,62 +8,28 @@ Este documento descreve a organização dos diretórios e arquivos do projeto, e
 ├── 📁 analises/                 # Contém laudos e análises técnicas do projeto.
 │   └── Analise-20260413.md
 │
-├── 📁 assets/                   # Arquivos de front-end compilados e estáticos.
-│   ├── 📁 css/                   # Folhas de estilo.
-│   │   ├── high-contrast.css   # Estilos para o modo de alta acessibilidade.
-│   │   └── style.css           # Estilos globais e customizações do Bootstrap.
-│   │
-│   ├── 📁 images/                # Ícones, logos e outras imagens da UI.
-│   │   ├── favicon.svg
-│   │   └── logo-white.svg
-│   │
-│   └── 📁 js/                    # Scripts JavaScript do lado do cliente.
-│       ├── app.js                # Lógica principal da aplicação (busca e renderização de dados).
-│       ├── form-oferta.js        # Lógica específica para o formulário de cadastro/edição.
-│       ├── high-contrast.js      # Manipula a ativação do modo de alto contraste.
-│       ├── toast.js              # Gerencia a exibição de notificações (toasts).
-│       └── validacao.js          # Classe para validação de formulários.
+├── 📁 api/                      # Lógica de negócio do backend (PHP).
 │
-├── 📁 data/                     # Dados mockados para simulação do protótipo.
-│   ├── ofertas.json
-│   └── reservas.json
-│
-├── 📁 database/                 # Definição e esquema do banco de dados.
-│   └── schema.sql              # Script SQL para criar a estrutura e popular as tabelas.
+├── 📁 database/                 # Definição, esquema e diagramas do banco de dados.
+│   ├── schema.sql              # Script SQL para criar a estrutura e popular as tabelas.
+│   └── schema.png              # Diagrama visual do banco de dados.
 │
 ├── 📁 docs/                     # Documentação oficial do projeto.
 │   ├── Jornada.md
 │   ├── Project-Structure.md    # Este arquivo.
 │   ├── Requisitos.md
-│   ├── arquitetura.svg
 │   └── UseCases.md
 │
+├── 📁 public/                    # Diretório raiz para o servidor web (único ponto de entrada).
+│   ├── 📁 assets/               # Arquivos de front-end (CSS, JS, imagens).
+│   ├── 📁 api/                  # Ponto de entrada da API (Roteador/Front Controller).
+│   │   └── index.php
+│   └── index.php               # Página inicial (landing page).
+│
 ├── .gitignore                  # Especifica arquivos a serem ignorados pelo Git.
-├── buscar-ofertas.php          # Página para consumidores buscarem ofertas (Template HTML).
-├── cadastrar_oferta.php        # Formulário para feirantes criarem/editarem ofertas (Template HTML).
-├── codigo-retirada.php         # Página que exibe o código para retirada da reserva.
-├── como-funciona.php           # Página estática explicativa.
-├── consumidor.php              # Painel principal do consumidor.
-├── feirante.php                # Painel principal do feirante.
-├── index.php                   # Página inicial (landing page).
-├── login.php                   # Página de simulação de login.
 ├── manifest.json               # Manifesto do PWA.
-├── minhas-ofertas.php          # Página para feirantes visualizarem suas ofertas (Template HTML).
-├── minhas-reservas.php         # Página para consumidores visualizarem suas reservas (Template HTML).
 └── sw.js                       # Service Worker (ainda como placeholder).
 ```
-
-## Arquitetura de Frontend (Sprint 0)
-
-A arquitetura atual do frontend foi projetada para ser um **protótipo de alta fidelidade e totalmente funcional**:
-
--   **Templates HTML (`.php`):** As páginas são arquivos PHP que atuam como templates HTML puros. Eles contêm a estrutura da página, mas nenhuma lógica de dados.
--   **Lógica em JavaScript:** Toda a interatividade, busca de dados (dos arquivos `.json`) e manipulação do DOM é realizada por JavaScript, em arquivos separados na pasta `assets/js/`.
-    -   `app.js` é o orquestrador principal para páginas de listagem.
-    -   `form-oferta.js` demonstra uma abordagem modular, tratando de uma funcionalidade específica.
--   **Simulação de Backend:** A interação com o "backend" é simulada através de `fetch()` para os arquivos locais `.json`, e o "salvamento" de dados é confirmado via `console.log()`. Isso permitiu validar todos os fluxos de usuário sem escrever uma linha de código de servidor.
-
-Esta abordagem garantiu que o **Sprint 0** fosse concluído rapidamente, resultando em um protótipo robusto que serve como um "contrato" visual para o desenvolvimento do backend.
 
 ## 🏛️ Arquitetura da Aplicação
 
@@ -96,3 +62,70 @@ O backend é uma API RESTful construída em **PHP 8+** puro, seguindo os princí
 2.  **Offline:** Quando o cliente está offline, o Service Worker intercepta as requisições.
     -   Para leitura de dados (GET), ele retorna os dados cacheados.
     -   Para escrita de dados (POST, PUT), ele armazena a requisição no **LocalStorage**. Assim que a conexão é restaurada, o Service Worker sincroniza os dados pendentes com o servidor.
+
+## 🗃️ Dicionário de Dados do Banco de Dados
+
+O banco de dados `xepaviva` é o coração do sistema, projetado para armazenar todas as informações críticas sobre usuários, produtos e transações. A modelagem busca consolidar informações e garantir a integridade dos dados através de chaves estrangeiras e restrições.
+
+### Diagrama do Banco de Dados
+
+O diagrama abaixo ilustra a relação entre as tabelas principais.
+
+![Diagrama do Banco de Dados](../database/schema.png)
+
+---
+
+### Tabela: `usuarios`
+
+Armazena informações sobre todos os usuários da plataforma, tanto feirantes quanto consumidores, em um único local para facilitar a autenticação e o gerenciamento.
+
+| Coluna | Tipo | Chave | Descrição |
+| :--- | :--- | :--- | :--- |
+| `id` | `INT` | PK | Identificador único do usuário. |
+| `nome` | `VARCHAR(255)` | | Nome completo do usuário. |
+| `email` | `VARCHAR(255)` | Única | Endereço de e-mail para login e comunicação. |
+| `senha` | `VARCHAR(255)` | | Senha com hash (bcrypt) para segurança. |
+| `cpf_cnpj` | `VARCHAR(20)` | | CPF ou CNPJ, opcional e relevante para feirantes. |
+| `tipo` | `ENUM` | | Define o papel do usuário: 'Feirante' ou 'Consumidor'. |
+| `localidade`| `VARCHAR(255)` | | Localização do feirante (ex: nome da feira), opcional. |
+| `data_cadastro` | `TIMESTAMP` | | Data e hora em que o usuário se cadastrou. |
+
+---
+
+### Tabela: `ofertas`
+
+Contém os detalhes das "xepas" ou kits de produtos anunciados pelos feirantes.
+
+| Coluna | Tipo | Chave | Descrição |
+| :--- | :--- | :--- | :--- |
+| `id` | `INT` | PK | Identificador único da oferta. |
+| `feirante_id` | `INT` | FK (`usuarios.id`) | Identificador do feirante que criou a oferta. |
+| `nome` | `VARCHAR(255)` | | Título da oferta (ex: "Kit Tomates Maduros"). |
+| `descricao` | `TEXT` | | Descrição detalhada do conteúdo do kit/oferta. |
+| `foto` | `VARCHAR(255)` | | URL da imagem de destaque da oferta. |
+| `preco` | `DECIMAL(10,2)`| | Preço do kit/oferta. |
+| `quantidade_inicial` | `INT` | | Quantidade de kits disponíveis no momento da criação. |
+| `quantidade_disponivel`| `INT` | | Quantidade de kits ainda disponíveis para reserva. |
+| `disponivel` | `BOOLEAN` | | Status que indica se a oferta ainda está ativa para reserva. |
+| `categoria` | `VARCHAR(100)`| | Categoria do produto (ex: "Frutas", "Legumes"). |
+| `data_criacao`| `TIMESTAMP` | | Data e hora de criação da oferta. |
+| `data_modificacao`| `TIMESTAMP` | | Data e hora da última modificação na oferta. |
+
+---
+
+### Tabela: `reservas`
+
+Registra o vínculo entre um consumidor e uma oferta, formalizando a intenção de compra e gerando as informações para a retirada.
+
+| Coluna | Tipo | Chave | Descrição |
+| :--- | :--- | :--- | :--- |
+| `id` | `INT` | PK | Identificador único da reserva. |
+| `consumidor_id` | `INT` | FK (`usuarios.id`) | Identificador do consumidor que fez a reserva. |
+| `oferta_id` | `INT` | FK (`ofertas.id`) | Identificador da oferta que foi reservada. |
+| `preco` | `DECIMAL(10,2)`| | Preço da oferta no momento exato da reserva. |
+| `peso` | `DECIMAL(10,3)`| | Peso aproximado do kit em kg, se aplicável. |
+| `status` | `ENUM` | | O estado atual da reserva no seu ciclo de vida. |
+| `codigo_retirada`| `VARCHAR(10)` | | Código único gerado para o consumidor apresentar na retirada. |
+| `data_reserva`| `TIMESTAMP` | | Data e hora em que a reserva foi efetuada. |
+| `data_retirada_prevista` | `DATETIME` | | Data e hora previstas para a retirada do produto. |
+| `data_retirada_efetiva`| `DATETIME` | | Data e hora em que o produto foi efetivamente retirado. |

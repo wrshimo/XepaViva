@@ -121,3 +121,9 @@ INSERT INTO `reservas` (`consumidor_id`, `oferta_id`, `preco`, `peso`, `status`,
 (5, 1, 5.00, 1.0, 'Cancelada pelo Feirante', 'XV-7814'),
 (4, 2, 4.50, 2.0, 'Nao Compareceu', 'XV-5006'),
 (5, 3, 2.00, 0.5, 'Expirada', 'XV-2193');
+
+-- Adicionando a coluna de peso que ficou faltando, conforme caso de uso UC-01
+ALTER TABLE `ofertas` ADD `peso` DECIMAL(10, 3) NULL COMMENT 'Peso do kit em kg, conforme definido pelo feirante';
+
+-- Inicializando o peso das ofertas já existentes com um valor padrão (1kg)
+UPDATE `ofertas` SET `peso` = 1.000 WHERE `peso` IS NULL;

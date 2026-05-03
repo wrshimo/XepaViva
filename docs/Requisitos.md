@@ -60,6 +60,14 @@ Para a especificação detalhada dos fluxos de interação, consulte: ➡️ **[
 
 ---
 
+## 4.1. Ciclo de Vida da Reserva
+
+A entidade `Reserva` é central para o fluxo de negócio do XepaViva. Seu ciclo de vida, desde a criação até a conclusão ou cancelamento, é governado por uma máquina de estados finitos. A compreensão deste fluxo é crucial para a correta implementação das regras de negócio.
+
+Para a especificação detalhada dos estados e das transições, consulte: ➡️ **[Documento de Ciclo de Vida da Reserva (States.md)](States.md)**
+
+---
+
 ## 5. User Experience (UX) e Padrão Visual
 
 ### 5.1 Paleta de Cores

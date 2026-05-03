@@ -1,0 +1,41 @@
+@startuml
+!theme plain
+
+title Diagrama de Estados da Reserva (XepaViva)
+
+state "Início" as entry_point
+state "Fim" as exit_point
+
+[*] --> entry_point
+
+state "Ciclo da Reserva" as ciclo {
+  state "Pendente" as Pendente
+  state "Aguardando Retirada" as AguardandoRetirada
+  state "Concluida" as Concluida
+  state "Cancelada" as Cancelada
+  state "Falha" as Falha
+
+  entry_point --> Pendente : UC-02: Consumidor reserva o kit
+
+  Pendente --> AguardandoRetirada : Sistema gera o código de retirada
+
+  AguardandoRetirada --> Concluida : Feirante valida o código e entrega o kit
+  Concluida --> exit_point
+
+  AguardandoRetirada --> Cancelada : Ação do Consumidor
+  note on link: Status: Cancelada pelo Consumidor
+
+  AguardandoRetirada --> Cancelada : Ação do Feirante
+  note on link: Status: Cancelada pelo Feirante
+
+  AguardandoRetirada --> Falha : Consumidor não aparece no prazo
+  note on link: Status: Nao Compareceu
+
+  AguardandoRetirada --> Falha : Sistema expira a reserva
+  note on link: Status: Expirada
+
+  Cancelada --> exit_point
+  Falha --> exit_point
+}
+
+@enduml

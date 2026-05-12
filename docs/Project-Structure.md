@@ -104,6 +104,7 @@ Contém os detalhes das "xepas" ou kits de produtos anunciados pelos feirantes.
 | `descricao` | `TEXT` | | Descrição detalhada do conteúdo do kit/oferta. |
 | `foto` | `VARCHAR(255)` | | URL da imagem de destaque da oferta. |
 | `preco` | `DECIMAL(10,2)`| | Preço do kit/oferta. |
+| `peso` | `DECIMAL(10,3)`| | Peso aproximado do kit em quilogramas (kg). |
 | `quantidade_inicial` | `INT` | | Quantidade de kits disponíveis no momento da criação. |
 | `quantidade_disponivel`| `INT` | | Quantidade de kits ainda disponíveis para reserva. |
 | `disponivel` | `BOOLEAN` | | Status que indica se a oferta ainda está ativa para reserva. |

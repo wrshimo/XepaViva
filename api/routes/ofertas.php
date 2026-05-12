@@ -33,6 +33,7 @@ switch ($method) {
                         "descricao" => $oferta->descricao,
                         "foto" => $oferta->foto,
                         "preco" => $oferta->preco,
+                        "peso" => $oferta->peso, // <-- ADICIONADO
                         "quantidade_inicial" => $oferta->quantidade_inicial,
                         "quantidade_disponivel" => $oferta->quantidade_disponivel,
                         "disponivel" => (bool)$oferta->disponivel,
@@ -59,6 +60,7 @@ switch ($method) {
                             "descricao" => $descricao,
                             "foto" => $foto,
                             "preco" => $preco,
+                            "peso" => $peso, // <-- ADICIONADO
                             "quantidade_inicial" => $quantidade_inicial,
                             "quantidade_disponivel" => $quantidade_disponivel,
                             "disponivel" => (bool)$disponivel,
@@ -70,7 +72,7 @@ switch ($method) {
                     }
                     send_response($ofertas_arr);
                 } else {
-                    send_response(["mensagem" => "Nenhuma oferta encontrada."], 404);
+                    send_response(["registros" => [], "contagem" => 0, "mensagem" => "Nenhuma oferta encontrada."]);
                 }
             }
         } catch (Exception $e) {
@@ -81,12 +83,13 @@ switch ($method) {
     case 'POST':
         try {
             $data = json_decode(file_get_contents($input_source));
-            if (!empty($data->feirante_id) && !empty($data->nome) && isset($data->preco) && isset($data->quantidade_inicial)) {
+            if (!empty($data->feirante_id) && !empty($data->nome) && isset($data->preco) && !empty($data->peso) && isset($data->quantidade_inicial)) {
                 $oferta->feirante_id = $data->feirante_id;
                 $oferta->nome = $data->nome;
                 $oferta->preco = $data->preco;
+                $oferta->peso = $data->peso; // <-- ADICIONADO
                 $oferta->quantidade_inicial = $data->quantidade_inicial;
-                $oferta->quantidade_disponivel = $data->quantidade_inicial;
+                $oferta->quantidade_disponivel = $data->quantidade_inicial; // A quantidade disponível começa igual à inicial
                 $oferta->descricao = $data->descricao ?? null;
                 $oferta->foto = $data->foto ?? null;
                 $oferta->categoria = $data->categoria ?? null;
@@ -98,7 +101,7 @@ switch ($method) {
                     send_response(["mensagem" => "Não foi possível criar a oferta."], 503);
                 }
             } else {
-                send_response(["mensagem" => "Dados incompletos para criar a oferta. Campos obrigatórios: feirante_id, nome, preco, quantidade_inicial."], 400);
+                send_response(["mensagem" => "Dados incompletos. Campos obrigatórios: feirante_id, nome, preco, peso, quantidade_inicial."], 400);
             }
         } catch (Exception $e) {
             send_response(["mensagem" => "Erro interno no servidor.", "erro" => $e->getMessage()], 500);
@@ -113,12 +116,12 @@ switch ($method) {
                 return;
             }
 
-            if (!empty($data->nome) && isset($data->preco) && isset($data->quantidade_inicial) && isset($data->quantidade_disponivel)) {
+            if (!empty($data->nome) && isset($data->preco) && !empty($data->peso) && isset($data->quantidade_inicial)) {
                 $oferta->id = intval($_GET['id']);
                 $oferta->nome = $data->nome;
                 $oferta->preco = $data->preco;
+                $oferta->peso = $data->peso; // <-- ADICIONADO
                 $oferta->quantidade_inicial = $data->quantidade_inicial;
-                $oferta->quantidade_disponivel = $data->quantidade_disponivel;
                 $oferta->descricao = $data->descricao ?? null;
                 $oferta->foto = $data->foto ?? null;
                 $oferta->categoria = $data->categoria ?? null;
@@ -130,7 +133,7 @@ switch ($method) {
                     send_response(["mensagem" => "Não foi possível atualizar a oferta. Verifique o ID ou se os dados foram modificados."], 404);
                 }
             } else {
-                send_response(["mensagem" => "Dados incompletos para atualizar a oferta."], 400);
+                send_response(["mensagem" => "Dados incompletos para atualizar. Campos obrigatórios: nome, preco, peso, quantidade_inicial."], 400);
             }
         } catch (Exception $e) {
             send_response(["mensagem" => "Erro interno no servidor.", "erro" => $e->getMessage()], 500);

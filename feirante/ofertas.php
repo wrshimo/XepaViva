@@ -44,7 +44,8 @@ $titulo_pagina = "Minhas Ofertas";
                     <tr>
                         <th>Produto</th>
                         <th>Preço</th>
-                        <th>Disponível (Qtd)</th>
+                        <th>Peso (Kg)</th>
+                        <th>Qtd. Disp/Inicial</th>
                         <th>Status</th>
                         <th>Ações</th>
                     </tr>
@@ -79,8 +80,18 @@ $titulo_pagina = "Minhas Ofertas";
                                 <input type="number" class="form-control" id="preco" step="0.01" required>
                             </div>
                             <div class="col-md-6 mb-3">
+                                <label for="peso" class="form-label">Peso Aproximado (Kg)</label>
+                                <input type="number" class="form-control" id="peso" step="0.001" placeholder="Ex: 1.500" required>
+                            </div>
+                        </div>
+                        <div class="row">
+                             <div class="col-md-6 mb-3">
                                 <label for="quantidade_inicial" class="form-label">Quantidade Inicial</label>
                                 <input type="number" class="form-control" id="quantidade_inicial" required>
+                            </div>
+                             <div class="col-md-6 mb-3">
+                                <label for="quantidade_disponivel" class="form-label">Quantidade Disponível</label>
+                                <input type="number" class="form-control" id="quantidade_disponivel" readonly>
                             </div>
                         </div>
                         <div class="mb-3">
@@ -121,26 +132,27 @@ $titulo_pagina = "Minhas Ofertas";
             const modal = new bootstrap.Modal(modalElement);
             const formOferta = document.getElementById('formOferta');
             const modalLabel = document.getElementById('modalOfertaLabel');
+            const campoQtdDisponivel = document.getElementById('quantidade_disponivel');
 
             const API_URL = '../api/routes/ofertas.php';
 
             const carregarOfertas = async () => {
-                tabelaCorpo.innerHTML = '<tr><td colspan="5" class="text-center">Carregando...</td></tr>';
+                tabelaCorpo.innerHTML = `<tr><td colspan="6" class="text-center">Carregando...</td></tr>`;
                 try {
-                    const response = await fetch(API_URL);
-                    if (!response.ok) throw new Error(`Erro HTTP: ${response.status}`);
+                    const response = await fetch(`${API_URL}?feirante_id=${feiranteId}`);
+                    if (!response.ok && response.status !== 404) throw new Error(`Erro HTTP: ${response.status}`);
                     const data = await response.json();
 
-                    const ofertasDoFeirante = data.registros ? data.registros.filter(o => o.feirante_id == feiranteId) : [];
                     tabelaCorpo.innerHTML = '';
 
-                    if (ofertasDoFeirante.length > 0) {
-                        ofertasDoFeirante.forEach(oferta => {
+                    if (data.registros && data.registros.length > 0) {
+                        data.registros.forEach(oferta => {
                             const tr = document.createElement('tr');
                             tr.id = `oferta-${oferta.id}`;
                             tr.innerHTML = `
                                 <td>${oferta.nome}</td>
                                 <td>R$ ${parseFloat(oferta.preco).toFixed(2).replace('.', ',')}</td>
+                                <td>${parseFloat(oferta.peso).toFixed(3).replace('.', ',')} kg</td>
                                 <td>${oferta.quantidade_disponivel} / ${oferta.quantidade_inicial}</td>
                                 <td>${oferta.disponivel ? '<span class="badge bg-success">Ativa</span>' : '<span class="badge bg-danger">Inativa</span>'}</td>
                                 <td>
@@ -151,11 +163,11 @@ $titulo_pagina = "Minhas Ofertas";
                             tabelaCorpo.appendChild(tr);
                         });
                     } else {
-                        tabelaCorpo.innerHTML = '<tr><td colspan="5" class="text-center">Você ainda não cadastrou nenhuma oferta.</td></tr>';
+                        tabelaCorpo.innerHTML = `<tr><td colspan="6" class="text-center">Você ainda não cadastrou nenhuma oferta.</td></tr>`;
                     }
                 } catch (error) {
                     console.error('Falha ao carregar ofertas:', error);
-                    tabelaCorpo.innerHTML = `<tr><td colspan="5" class="text-center text-danger">Erro ao carregar ofertas.</td></tr>`;
+                    tabelaCorpo.innerHTML = `<tr><td colspan="6" class="text-center text-danger">Erro ao carregar ofertas.</td></tr>`;
                 }
             };
 
@@ -164,13 +176,22 @@ $titulo_pagina = "Minhas Ofertas";
                 formOferta.reset();
                 document.getElementById('oferta-id').value = '';
                 document.getElementById('disponivel').checked = true;
+                campoQtdDisponivel.parentElement.style.display = 'none'; // Oculta o campo de qtd disponível
             };
 
+            modalElement.addEventListener('show.bs.modal', function (event) {
+                // Se o modal foi acionado pelo botão de nova oferta
+                if (!event.relatedTarget.hasAttribute('onclick')) {
+                    resetarModal();
+                }
+            });
+            
             modalElement.addEventListener('hidden.bs.modal', resetarModal);
 
             window.abrirModalParaEditar = async (id) => {
                 resetarModal();
                 modalLabel.textContent = 'Editar Oferta';
+                campoQtdDisponivel.parentElement.style.display = 'block'; // Mostra o campo
 
                 try {
                     const response = await fetch(`${API_URL}?id=${id}`);
@@ -180,7 +201,9 @@ $titulo_pagina = "Minhas Ofertas";
                     document.getElementById('oferta-id').value = oferta.id;
                     document.getElementById('nome').value = oferta.nome;
                     document.getElementById('preco').value = oferta.preco;
+                    document.getElementById('peso').value = oferta.peso;
                     document.getElementById('quantidade_inicial').value = oferta.quantidade_inicial;
+                    document.getElementById('quantidade_disponivel').value = oferta.quantidade_disponivel;
                     document.getElementById('descricao').value = oferta.descricao;
                     document.getElementById('categoria').value = oferta.categoria;
                     document.getElementById('foto').value = oferta.foto;
@@ -197,21 +220,13 @@ $titulo_pagina = "Minhas Ofertas";
                 const id = document.getElementById('oferta-id').value;
                 const isUpdate = id !== '';
 
-                // O 'quantidade_disponivel' não está no form, então definimos com base na lógica de negócio
-                const quantidadeInicial = parseInt(document.getElementById('quantidade_inicial').value, 10);
-                let quantidadeDisponivel = quantidadeInicial; // Valor padrão para criação
-
-                if (isUpdate) {
-                    // Para atualização, precisaríamos de um campo específico ou buscar o valor atual
-                    // Por simplicidade, vamos manter a lógica no backend que não atualiza a qtd_disponivel no PUT de propósito
-                }
-
                 const dadosOferta = {
                     feirante_id: feiranteId,
                     nome: document.getElementById('nome').value,
                     preco: parseFloat(document.getElementById('preco').value),
-                    quantidade_inicial: quantidadeInicial,
-                    quantidade_disponivel: quantidadeDisponivel, // O backend irá ajustar isso melhor na atualização
+                    peso: parseFloat(document.getElementById('peso').value),
+                    quantidade_inicial: parseInt(document.getElementById('quantidade_inicial').value, 10),
+                    // A quantidade disponível não é enviada, pois o backend cuida dessa lógica
                     descricao: document.getElementById('descricao').value,
                     categoria: document.getElementById('categoria').value,
                     foto: document.getElementById('foto').value,
@@ -233,7 +248,7 @@ $titulo_pagina = "Minhas Ofertas";
 
                     alert(resultado.mensagem);
                     modal.hide();
-                    carregarOfertas(); // Recarrega a lista
+                    carregarOfertas();
 
                 } catch (error) {
                     alert(`Erro ao salvar: ${error.message}`);
@@ -249,7 +264,7 @@ $titulo_pagina = "Minhas Ofertas";
                     if (!response.ok) throw new Error(resultado.mensagem || 'Erro ao excluir.');
                     
                     alert(resultado.mensagem);
-                    carregarOfertas(); // Recarrega a lista
+                    carregarOfertas();
 
                 } catch (error) {
                     alert(`Erro: ${error.message}`);

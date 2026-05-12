@@ -15,12 +15,16 @@ class Oferta {
     public $descricao;
     public $foto;
     public $preco;
+    public $peso; // <-- ADICIONADO
     public $quantidade_inicial;
     public $quantidade_disponivel;
     public $disponivel;
     public $categoria;
     public $data_criacao;
     public $data_modificacao;
+
+    // Propriedade para JOIN
+    public $nome_feirante;
 
     public function __construct() {
         $this->conn = Database::getInstance()->getConnection();
@@ -56,6 +60,7 @@ class Oferta {
             $this->descricao = $row['descricao'];
             $this->foto = $row['foto'];
             $this->preco = $row['preco'];
+            $this->peso = $row['peso']; // <-- ADICIONADO
             $this->quantidade_inicial = $row['quantidade_inicial'];
             $this->quantidade_disponivel = $row['quantidade_disponivel'];
             $this->disponivel = $row['disponivel'];
@@ -75,7 +80,7 @@ class Oferta {
      * @return bool True se a oferta foi criada com sucesso, false caso contrário.
      */
     public function criar() {
-        $query = "INSERT INTO " . $this->table_name . " SET feirante_id=:feirante_id, nome=:nome, descricao=:descricao, foto=:foto, preco=:preco, quantidade_inicial=:quantidade_inicial, quantidade_disponivel=:quantidade_disponivel, categoria=:categoria, disponivel=:disponivel";
+        $query = "INSERT INTO " . $this->table_name . " SET feirante_id=:feirante_id, nome=:nome, descricao=:descricao, foto=:foto, preco=:preco, peso=:peso, quantidade_inicial=:quantidade_inicial, quantidade_disponivel=:quantidade_disponivel, categoria=:categoria, disponivel=:disponivel";
 
         $stmt = $this->conn->prepare($query);
 
@@ -85,6 +90,7 @@ class Oferta {
         $this->descricao = htmlspecialchars(strip_tags($this->descricao ?? ''));
         $this->foto = htmlspecialchars(strip_tags($this->foto ?? ''));
         $this->preco = htmlspecialchars(strip_tags($this->preco ?? ''));
+        $this->peso = htmlspecialchars(strip_tags($this->peso ?? ''));
         $this->quantidade_inicial = htmlspecialchars(strip_tags($this->quantidade_inicial ?? ''));
         $this->quantidade_disponivel = htmlspecialchars(strip_tags($this->quantidade_disponivel ?? ''));
         $this->categoria = htmlspecialchars(strip_tags($this->categoria ?? ''));
@@ -96,6 +102,7 @@ class Oferta {
         $stmt->bindParam(":descricao", $this->descricao);
         $stmt->bindParam(":foto", $this->foto);
         $stmt->bindParam(":preco", $this->preco);
+        $stmt->bindParam(":peso", $this->peso);
         $stmt->bindParam(":quantidade_inicial", $this->quantidade_inicial);
         $stmt->bindParam(":quantidade_disponivel", $this->quantidade_disponivel);
         $stmt->bindParam(":categoria", $this->categoria);
@@ -121,8 +128,9 @@ class Oferta {
                     descricao = :descricao,
                     foto = :foto,
                     preco = :preco,
+                    peso = :peso, -- <-- ADICIONADO
                     quantidade_inicial = :quantidade_inicial,
-                    quantidade_disponivel = :quantidade_disponivel,
+                    -- quantidade_disponivel é intencionalmente omitida para ser gerenciada por outra lógica (reservas)
                     disponivel = :disponivel,
                     categoria = :categoria
                 WHERE
@@ -136,8 +144,8 @@ class Oferta {
         $this->descricao = htmlspecialchars(strip_tags($this->descricao ?? ''));
         $this->foto = htmlspecialchars(strip_tags($this->foto ?? ''));
         $this->preco = htmlspecialchars(strip_tags($this->preco ?? ''));
+        $this->peso = htmlspecialchars(strip_tags($this->peso ?? ''));
         $this->quantidade_inicial = htmlspecialchars(strip_tags($this->quantidade_inicial ?? ''));
-        $this->quantidade_disponivel = htmlspecialchars(strip_tags($this->quantidade_disponivel ?? ''));
         $this->disponivel = isset($this->disponivel) ? ($this->disponivel ? 1 : 0) : 1;
         $this->categoria = htmlspecialchars(strip_tags($this->categoria ?? ''));
 
@@ -147,8 +155,8 @@ class Oferta {
         $stmt->bindParam(':descricao', $this->descricao);
         $stmt->bindParam(':foto', $this->foto);
         $stmt->bindParam(':preco', $this->preco);
+        $stmt->bindParam(':peso', $this->peso);
         $stmt->bindParam(':quantidade_inicial', $this->quantidade_inicial);
-        $stmt->bindParam(':quantidade_disponivel', $this->quantidade_disponivel);
         $stmt->bindParam(':disponivel', $this->disponivel);
         $stmt->bindParam(':categoria', $this->categoria);
 

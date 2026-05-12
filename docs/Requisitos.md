@@ -124,9 +124,27 @@ A persistência dos dados no MariaDB é estruturada em torno de três tabelas pr
 
 ## 8. Cronograma e Riscos
 
-*   **Execução:** 09/03/2026 a 29/05/2026.
-*   **Ponto de Atenção:** Baixa conectividade 4G nas feiras.
-*   **Mitigação:** Sincronização assíncrona robusta via Service Worker.
+*   **Período de Execução:** 09/03/2026 a 29/05/2026.
+*   **Ponto de Atenção Crítico:** Baixa conectividade 4G nas feiras, o que pode impactar a experiência do usuário em tempo real.
+*   **Estratégia de Mitigação:** Implementação de um Service Worker robusto com estratégia de cache e sincronização assíncrona de dados para garantir o funcionamento offline.
+
+### 8.1 Fases do Projeto
+
+| Fase | Sprint | Foco Principal | Período Previsto |
+| :--- | :--- | :--- | :--- |
+| **Fase 1** | Sprint 0 | Prototipação e Validação de UI/UX (Frontend estático) | 09/03 a 20/03 |
+| **Fase 2** | Sprint 1 | Desenvolvimento do Backend (API) e DB - **Módulo de Ofertas** | 23/03 a 17/04 |
+| **Fase 2** | Sprint 2 | Desenvolvimento do Backend (API) e DB - Módulos de Usuários e Reservas | 20/04 a 08/05 |
+| **Fase 3** | Sprint 3 | Integração Frontend + Backend, PWA e Testes | 11/05 a 29/05 |
+
+### 8.2 Status das Entregas (Atualizado em 30/05/2026)
+
+| Requisito Associado | Entrega | Status | Data de Conclusão |
+| :--- | :--- | :--- | :--- |
+| **RF03** | **Módulo de Gerenciamento de Ofertas (CRUD Completo)** | ✅ **Concluído** | 30/05/2026 |
+| **RF01, RF02** | Módulo de Cadastro e Autenticação de Usuários | ⏳ Em Andamento | - |
+| **RF04** | Módulo de Reservas de Kits | 📋 Planejado | - |
+| **RF05** | Dashboard de Impacto | 📋 Planejado | - |
 
 ---
 

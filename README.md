@@ -21,6 +21,19 @@ Este projeto foi desenvolvido como parte do **Projeto Extensionista Integrador**
 
 ---
 
+## 🚀 Status do Projeto
+
+*Última atualização: 30 de maio de 2026*
+
+| Módulo | Funcionalidade Principal | Status |
+| :--- | :--- | :--- |
+| **Gestão de Ofertas** | CRUD completo para Feirantes | ✅ **Concluído e Funcional** |
+| **Gestão de Usuários** | Cadastro e Autenticação | ⏳ Em Andamento |
+| **Gestão de Reservas**| Sistema de Reservas para Consumidores | 📋 Planejado |
+| **PWA & Offline** | Implementação do Service Worker | 📋 Planejado |
+
+---
+
 ## 🛠️ Pilha de Tecnologia (Tech Stack)
 
 O projeto foi construído com uma filosofia de **portabilidade, resiliência e acessibilidade**.
@@ -40,6 +53,7 @@ Toda a concepção arquitetural e os requisitos do projeto estão documentados n
 
 *   **[📄 Documentação de Requisitos](docs/Requisitos.md)**: Visão geral, objetivos, requisitos funcionais e não funcionais, e arquitetura da aplicação.
 *   **[🎭 Casos de Uso (Use Cases)](docs/UseCases.md)**: Especificação detalhada de todas as interações do usuário com o sistema, incluindo diagramas e fluxos de exceção.
+*   **[🔄 Histórico de Mudanças (Changelog)](CHANGELOG.md)**: Registro cronológico de todas as implementações e melhorias.
 
 ---
 

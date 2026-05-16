@@ -8,8 +8,6 @@ Este documento descreve a organização dos diretórios e arquivos do projeto, e
 ├── 📁 analises/                 # Contém laudos e análises técnicas do projeto.
 │   └── Analise-20260413.md
 │
-├── 📁 api/                      # Lógica de negócio do backend (PHP).
-│
 ├── 📁 database/                 # Definição, esquema e diagramas do banco de dados.
 │   ├── schema.sql              # Script SQL para criar a estrutura e popular as tabelas.
 │   └── schema.png              # Diagrama visual do banco de dados.
@@ -22,8 +20,7 @@ Este documento descreve a organização dos diretórios e arquivos do projeto, e
 │
 ├── 📁 public/                    # Diretório raiz para o servidor web (único ponto de entrada).
 │   ├── 📁 assets/               # Arquivos de front-end (CSS, JS, imagens).
-│   ├── 📁 api/                  # Ponto de entrada da API (Roteador/Front Controller).
-│   │   └── index.php
+│   ├── 📁 api/                  # Contém toda a lógica do backend (API), incluindo rotas, controllers e modelos.
 │   └── index.php               # Página inicial (landing page).
 │
 ├── .gitignore                  # Especifica arquivos a serem ignorados pelo Git.

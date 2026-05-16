@@ -15,7 +15,7 @@ class Oferta {
     public $descricao;
     public $foto;
     public $preco;
-    public $peso; // <-- ADICIONADO
+    public $peso; 
     public $quantidade_inicial;
     public $quantidade_disponivel;
     public $disponivel;
@@ -43,6 +43,21 @@ class Oferta {
     }
 
     /**
+     * Lê todos os registros de ofertas para um feirante específico.
+     * @param int $feirante_id O ID do feirante.
+     * @return PDOStatement O statement PDO com o resultado.
+     */
+    public function getPorFeirante($feirante_id) {
+        $query = "SELECT o.*, u.nome as nome_feirante FROM " . $this->table_name . " o LEFT JOIN usuarios u ON o.feirante_id = u.id WHERE o.feirante_id = ? ORDER BY o.data_criacao DESC";
+        
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(1, $feirante_id, PDO::PARAM_INT);
+        $stmt->execute();
+        
+        return $stmt;
+    }
+
+    /**
      * Lê um único registro de oferta pelo ID.
      *
      * @return bool True se a oferta for encontrada, false caso contrário.
@@ -60,14 +75,13 @@ class Oferta {
             $this->descricao = $row['descricao'];
             $this->foto = $row['foto'];
             $this->preco = $row['preco'];
-            $this->peso = $row['peso']; // <-- ADICIONADO
+            $this->peso = $row['peso'];
             $this->quantidade_inicial = $row['quantidade_inicial'];
             $this->quantidade_disponivel = $row['quantidade_disponivel'];
             $this->disponivel = $row['disponivel'];
             $this->categoria = $row['categoria'];
             $this->data_criacao = $row['data_criacao'];
             $this->data_modificacao = $row['data_modificacao'];
-            // Campo adicional do JOIN
             $this->nome_feirante = $row['nome_feirante'];
             return true;
         }
@@ -128,9 +142,8 @@ class Oferta {
                     descricao = :descricao,
                     foto = :foto,
                     preco = :preco,
-                    peso = :peso, -- <-- ADICIONADO
+                    peso = :peso, 
                     quantidade_inicial = :quantidade_inicial,
-                    -- quantidade_disponivel é intencionalmente omitida para ser gerenciada por outra lógica (reservas)
                     disponivel = :disponivel,
                     categoria = :categoria
                 WHERE
@@ -160,9 +173,7 @@ class Oferta {
         $stmt->bindParam(':disponivel', $this->disponivel);
         $stmt->bindParam(':categoria', $this->categoria);
 
-        // Executa a query
         if ($stmt->execute()) {
-            // Verifica se alguma linha foi realmente afetada
             if ($stmt->rowCount() > 0) {
                 return true;
             }
@@ -180,11 +191,9 @@ class Oferta {
         $query = "DELETE FROM " . $this->table_name . " WHERE id = ?";
         $stmt = $this->conn->prepare($query);
 
-        // Sanitiza e vincula o ID
         $this->id = htmlspecialchars(strip_tags($this->id));
         $stmt->bindParam(1, $this->id);
 
-        // Executa a query
         if ($stmt->execute()) {
             if ($stmt->rowCount() > 0) {
                 return true;

@@ -39,7 +39,7 @@
     <main class="container mt-4">
         <h1 class="h2 mb-4">Encontre Xepas Fresquinhas</h1>
 
-        <!-- Filtros -->
+        <!-- Filtros (funcionalidade futura) -->
         <div class="row mb-4">
             <div class="col-md-6">
                 <input type="search" id="filtroBusca" class="form-control" placeholder="Busque por produto ou feirante...">
@@ -59,14 +59,7 @@
 
         <!-- Resultados -->
         <div id="ofertas-container" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-            <!-- O conteúdo dinâmico será inserido aqui pelo JavaScript -->
-            <!-- Placeholder de carregamento -->
-            <div class="col-12 text-center py-5">
-                <div class="spinner-border text-success" role="status">
-                    <span class="visually-hidden">Carregando...</span>
-                </div>
-                <p class="mt-2">Buscando ofertas...</p>
-            </div>
+            <!-- O conteúdo dinâmico (cards de ofertas) será inserido aqui pelo JavaScript -->
         </div>
 
     </main>
@@ -77,12 +70,6 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="assets/js/high-contrast.js"></script>
-    <script src="assets/js/app.js"></script>
-    <script>
-        // Inicializa a página de busca de ofertas quando o DOM estiver pronto.
-        document.addEventListener('DOMContentLoaded', () => {
-            initBuscarOfertas();
-        });
-    </script>
+    <script src="assets/js/buscar-ofertas.js"></script> <!-- Novo script -->
 </body>
 </html>

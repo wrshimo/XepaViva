@@ -1,13 +1,42 @@
 document.addEventListener('DOMContentLoaded', () => {
 
     const API_URL = '/api/routes/ofertas.php';
+    const CATEGORIAS_API_URL = '/api/routes/categorias.php';
+
     const feiranteId = document.getElementById('feirante_id').value;
     const ofertasRecentesContainer = document.getElementById('ofertasRecentesContainer');
     
     // --- Lógica do Modal de Oferta ---
-    const ofertaModal = new bootstrap.Modal(document.getElementById('ofertaModal'));
+    const ofertaModalElement = document.getElementById('ofertaModal');
+    const ofertaModal = new bootstrap.Modal(ofertaModalElement);
     const formOferta = document.getElementById('formOferta');
     const ofertaModalLabel = document.getElementById('ofertaModalLabel');
+    const categoriaSelect = document.getElementById('categoria');
+
+    /**
+     * Carrega as categorias da API e popula o select no formulário do modal.
+     */
+    const carregarCategorias = async () => {
+        try {
+            const response = await fetch(CATEGORIAS_API_URL);
+            if (!response.ok) {
+                throw new Error('Não foi possível carregar as categorias.');
+            }
+            const resultado = await response.json();
+            if (resultado.sucesso && resultado.dados) {
+                categoriaSelect.innerHTML = '<option value="" selected disabled>Selecione uma categoria...</option>'; // Reset
+                resultado.dados.forEach(categoria => {
+                    const option = document.createElement('option');
+                    option.value = categoria;
+                    option.textContent = categoria;
+                    categoriaSelect.appendChild(option);
+                });
+            }
+        } catch (error) {
+            console.error('Erro ao carregar categorias:', error);
+            showToast('Falha ao carregar opções de categoria.', 'error');
+        }
+    };
 
     /**
      * Busca as 3 ofertas mais recentes e as exibe no painel.
@@ -27,14 +56,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (ofertas && ofertas.length > 0) {
                 ofertasRecentesContainer.innerHTML = ''; // Limpa o container
-                // Pega apenas as 3 mais recentes
                 const recentes = ofertas.slice(0, 3);
                 
                 const listGroup = document.createElement('div');
                 listGroup.className = 'list-group';
 
                 recentes.forEach(oferta => {
-                    listGroup.appendChild(criarCardOferta(oferta));
+                    listGroup.appendChild(criarItemListaOferta(oferta));
                 });
                 ofertasRecentesContainer.appendChild(listGroup);
             } else {
@@ -48,33 +76,39 @@ document.addEventListener('DOMContentLoaded', () => {
 
     /**
      * Cria o HTML para um item da lista de ofertas recentes.
-     * @param {object} oferta Objeto da oferta.
-     * @returns {HTMLElement} O elemento do item da lista.
      */
-    const criarCardOferta = (oferta) => {
+    const criarItemListaOferta = (oferta) => {
         const item = document.createElement('a');
-        item.href = 'minhas-ofertas.php'; // Link para a página de gerenciamento
+        item.href = 'minhas-ofertas.php';
         item.className = 'list-group-item list-group-item-action flex-column align-items-start';
 
         const precoFormatado = `R$ ${parseFloat(oferta.preco).toFixed(2).replace('.', ',')}`;
+        const categoriaBadge = oferta.categoria 
+            ? `<span class="badge bg-info text-dark ms-2">${oferta.categoria}</span>` 
+            : '';
 
         item.innerHTML = `
-            <div class="d-flex w-100 justify-content-between">
-                <h5 class="mb-1">${oferta.produto}</h5>
+            <div class="d-flex w-100 justify-content-between align-items-center">
+                <h5 class="mb-1">${oferta.produto}${categoriaBadge}</h5>
                 <small class="text-muted">${oferta.quantidade_disponivel} un.</small>
             </div>
-            <p class="mb-1">${oferta.descricao || ''}</p>
-            <small class="fw-bold">${precoFormatado}</small>
+            <p class="mb-1 mt-1">${oferta.descricao || ''}</p>
+            <small class="fw-bold text-success">${precoFormatado}</small>
         `;
         return item;
     };
 
     /**
-     * Salva a nova oferta (apenas criação) a partir do modal.
-     * @param {Event} event 
+     * Salva a nova oferta a partir do modal.
      */
     const salvarNovaOferta = async (event) => {
         event.preventDefault();
+        event.stopPropagation();
+
+        if (!formOferta.checkValidity()) {
+            formOferta.classList.add('was-validated');
+            return;
+        }
 
         const dadosOferta = {
             produto: document.getElementById('produto').value,
@@ -82,6 +116,7 @@ document.addEventListener('DOMContentLoaded', () => {
             preco: document.getElementById('preco').value,
             quantidade_disponivel: document.getElementById('quantidade_disponivel').value,
             peso: document.getElementById('peso').value || null,
+            categoria: categoriaSelect.value, // Pega o valor do select
             feirante_id: parseInt(feiranteId)
         };
 
@@ -98,6 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 showToast('Nova oferta anunciada com sucesso!', 'success');
                 ofertaModal.hide();
                 formOferta.reset();
+                formOferta.classList.remove('was-validated');
                 carregarOfertasRecentes(); // Atualiza a lista no painel
             } else {
                 throw new Error(result.message || 'Erro ao criar oferta.');
@@ -114,18 +150,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const prepararNovoFormulario = () => {
         ofertaModalLabel.textContent = 'Anunciar Nova Xepa';
         formOferta.reset();
-        document.getElementById('ofertaId').value = ''; // Garante que não há ID de edição
+        formOferta.classList.remove('was-validated');
+        document.getElementById('ofertaId').value = '';
     };
 
     // --- EVENT LISTENERS ---
-
-    // Listener para o formulário do modal
     formOferta.addEventListener('submit', salvarNovaOferta);
-
-    // Garante que o modal esteja sempre no modo de criação
     document.getElementById('btnNovaOferta').addEventListener('click', prepararNovoFormulario);
-    document.getElementById('ofertaModal').addEventListener('hidden.bs.modal', prepararNovoFormulario);
+    ofertaModalElement.addEventListener('hidden.bs.modal', prepararNovoFormulario);
 
     // --- INICIALIZAÇÃO ---
+    carregarCategorias();
     carregarOfertasRecentes();
 });

@@ -23,11 +23,9 @@ switch ($method) {
     case 'GET':
         try {
             $stmt = null;
-            // Se um feirante_id é especificado, busca as ofertas dele
             if (isset($_GET['feirante_id'])) {
                 $stmt = $oferta->getPorFeirante(intval($_GET['feirante_id']));
             } 
-            // Se um id de oferta é especificado, busca essa oferta
             else if (isset($_GET['id'])) {
                 $oferta->id = intval($_GET['id']);
                 if ($oferta->getUm()) {
@@ -50,9 +48,8 @@ switch ($method) {
                 } else {
                     send_response(["mensagem" => "Oferta não encontrada."], 404);
                 }
-                return; // Encerra a execução aqui
+                return;
             } 
-            // Senão, busca todas as ofertas
             else {
                 $stmt = $oferta->getTodas();
             }
@@ -81,7 +78,7 @@ switch ($method) {
                 }
                 send_response($ofertas_arr);
             } else {
-                send_response([]); // Envia um array vazio
+                send_response([]);
             }
         } catch (Exception $e) {
             send_response(["mensagem" => "Erro interno no servidor.", "erro" => $e->getMessage()], 500);
@@ -150,16 +147,18 @@ switch ($method) {
 
     case 'DELETE':
         try {
-            $data = json_decode(file_get_contents('php://input'));
-            if ($data && !empty($data->id)) {
-                $oferta->id = $data->id;
-                if($oferta->deletar()){
-                    send_response(["status" => "success", "message" => "Oferta deletada com sucesso."]);
+            // CORRIGIDO: Ler o ID da oferta a partir do parâmetro da URL ($_GET) em vez do corpo da requisição.
+            if (isset($_GET['id'])) {
+                $oferta->id = intval($_GET['id']);
+
+                // O método deletar() no modelo já faz a exclusão lógica (UPDATE disponivel = 0)
+                if ($oferta->deletar()) {
+                    send_response(["status" => "success", "message" => "Oferta excluída com sucesso."]);
                 } else {
-                    send_response(["status" => "error", "message" => "Não foi possível deletar a oferta."], 503);
+                    send_response(["status" => "error", "message" => "Não foi possível excluir a oferta. O ID pode não existir."], 503);
                 }
             } else {
-                 send_response(["status" => "error", "message" => "ID da oferta não fornecido."], 400);
+                send_response(["status" => "error", "message" => "ID da oferta não fornecido na URL."], 400);
             }
         } catch (Exception $e) {
             send_response(["status" => "error", "message" => "Erro interno no servidor.", "erro" => $e->getMessage()], 500);

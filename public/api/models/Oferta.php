@@ -15,15 +15,13 @@ class Oferta {
     public $descricao;
     public $foto;
     public $preco;
-    public $peso; 
+    public $peso;
     public $quantidade_inicial;
     public $quantidade_disponivel;
     public $disponivel;
     public $categoria;
     public $data_criacao;
     public $data_modificacao;
-
-    // Propriedade para JOIN
     public $nome_feirante;
 
     public function __construct() {
@@ -31,36 +29,34 @@ class Oferta {
     }
 
     /**
-     * Lê todos os registros de ofertas do banco de dados.
-     *
-     * @return PDOStatement O statement PDO com o resultado.
+     * Lê todos os registros de ofertas disponíveis.
+     * Somente retorna ofertas com disponivel = 1.
+     * @return PDOStatement
      */
     public function getTodas() {
-        $query = "SELECT o.*, u.nome as nome_feirante FROM " . $this->table_name . " o LEFT JOIN usuarios u ON o.feirante_id = u.id ORDER BY o.data_criacao DESC";
+        $query = "SELECT o.*, u.nome as nome_feirante FROM " . $this->table_name . " o LEFT JOIN usuarios u ON o.feirante_id = u.id WHERE o.disponivel = 1 ORDER BY o.data_criacao DESC";
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
         return $stmt;
     }
 
     /**
-     * Lê todos os registros de ofertas para um feirante específico.
-     * @param int $feirante_id O ID do feirante.
-     * @return PDOStatement O statement PDO com o resultado.
+     * Lê todas as ofertas disponíveis para um feirante específico.
+     * Somente retorna ofertas com disponivel = 1.
+     * @param int $feirante_id
+     * @return PDOStatement
      */
     public function getPorFeirante($feirante_id) {
-        $query = "SELECT o.*, u.nome as nome_feirante FROM " . $this->table_name . " o LEFT JOIN usuarios u ON o.feirante_id = u.id WHERE o.feirante_id = ? ORDER BY o.data_criacao DESC";
-        
+        $query = "SELECT o.*, u.nome as nome_feirante FROM " . $this->table_name . " o LEFT JOIN usuarios u ON o.feirante_id = u.id WHERE o.feirante_id = ? AND o.disponivel = 1 ORDER BY o.data_criacao DESC";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(1, $feirante_id, PDO::PARAM_INT);
         $stmt->execute();
-        
         return $stmt;
     }
 
     /**
      * Lê um único registro de oferta pelo ID.
-     *
-     * @return bool True se a oferta for encontrada, false caso contrário.
+     * @return bool
      */
     public function getUm() {
         $query = "SELECT o.*, u.nome as nome_feirante FROM " . $this->table_name . " o LEFT JOIN usuarios u ON o.feirante_id = u.id WHERE o.id = ? LIMIT 0,1";
@@ -90,50 +86,42 @@ class Oferta {
 
     /**
      * Cria uma nova oferta no banco de dados.
-     *
-     * @return bool True se a oferta foi criada com sucesso, false caso contrário.
+     * @return bool
      */
     public function criar() {
-        $query = "INSERT INTO " . $this->table_name . " SET feirante_id=:feirante_id, nome=:nome, descricao=:descricao, foto=:foto, preco=:preco, peso=:peso, quantidade_inicial=:quantidade_inicial, quantidade_disponivel=:quantidade_disponivel, categoria=:categoria, disponivel=:disponivel";
-
+        $query = "INSERT INTO " . $this->table_name . " SET feirante_id=:feirante_id, nome=:nome, descricao=:descricao, foto=:foto, preco=:preco, peso=:peso, quantidade_disponivel=:quantidade_disponivel, quantidade_inicial=:quantidade_disponivel, categoria=:categoria, disponivel=1";
         $stmt = $this->conn->prepare($query);
 
-        // Sanitiza os dados
-        $this->feirante_id = htmlspecialchars(strip_tags($this->feirante_id ?? ''));
-        $this->nome = htmlspecialchars(strip_tags($this->nome ?? ''));
-        $this->descricao = htmlspecialchars(strip_tags($this->descricao ?? ''));
+        // Sanitiza
+        $this->feirante_id = htmlspecialchars(strip_tags($this->feirante_id));
+        $this->nome = htmlspecialchars(strip_tags($this->nome));
+        $this->descricao = htmlspecialchars(strip_tags($this->descricao));
         $this->foto = htmlspecialchars(strip_tags($this->foto ?? ''));
-        $this->preco = htmlspecialchars(strip_tags($this->preco ?? ''));
-        $this->peso = htmlspecialchars(strip_tags($this->peso ?? ''));
-        $this->quantidade_inicial = htmlspecialchars(strip_tags($this->quantidade_inicial ?? ''));
-        $this->quantidade_disponivel = htmlspecialchars(strip_tags($this->quantidade_disponivel ?? ''));
-        $this->categoria = htmlspecialchars(strip_tags($this->categoria ?? ''));
-        $this->disponivel = isset($this->disponivel) ? ($this->disponivel ? 1 : 0) : 1;
-
-        // Vincula os valores
+        $this->preco = htmlspecialchars(strip_tags($this->preco));
+        $this->peso = htmlspecialchars(strip_tags($this->peso ?? null));
+        $this->quantidade_disponivel = htmlspecialchars(strip_tags($this->quantidade_disponivel));
+        $this->categoria = htmlspecialchars(strip_tags($this->categoria));
+        
+        // Vincula
         $stmt->bindParam(":feirante_id", $this->feirante_id);
         $stmt->bindParam(":nome", $this->nome);
         $stmt->bindParam(":descricao", $this->descricao);
         $stmt->bindParam(":foto", $this->foto);
         $stmt->bindParam(":preco", $this->preco);
         $stmt->bindParam(":peso", $this->peso);
-        $stmt->bindParam(":quantidade_inicial", $this->quantidade_inicial);
         $stmt->bindParam(":quantidade_disponivel", $this->quantidade_disponivel);
         $stmt->bindParam(":categoria", $this->categoria);
-        $stmt->bindParam(":disponivel", $this->disponivel);
 
-        if($stmt->execute()){
+        if($stmt->execute()) {
             $this->id = $this->conn->lastInsertId();
             return true;
         }
-
         return false;
     }
 
     /**
      * Atualiza uma oferta existente no banco de dados.
-     *
-     * @return bool True se a atualização foi bem-sucedida, false caso contrário.
+     * @return bool
      */
     public function atualizar() {
         $query = "UPDATE " . $this->table_name . "
@@ -143,63 +131,55 @@ class Oferta {
                     foto = :foto,
                     preco = :preco,
                     peso = :peso, 
-                    quantidade_inicial = :quantidade_inicial,
+                    quantidade_disponivel = :quantidade_disponivel,
                     disponivel = :disponivel,
                     categoria = :categoria
                 WHERE
                     id = :id";
-
         $stmt = $this->conn->prepare($query);
 
-        // Sanitiza os dados
-        $this->id = htmlspecialchars(strip_tags($this->id ?? ''));
-        $this->nome = htmlspecialchars(strip_tags($this->nome ?? ''));
-        $this->descricao = htmlspecialchars(strip_tags($this->descricao ?? ''));
+        // Sanitiza
+        $this->id = htmlspecialchars(strip_tags($this->id));
+        $this->nome = htmlspecialchars(strip_tags($this->nome));
+        $this->descricao = htmlspecialchars(strip_tags($this->descricao));
         $this->foto = htmlspecialchars(strip_tags($this->foto ?? ''));
-        $this->preco = htmlspecialchars(strip_tags($this->preco ?? ''));
-        $this->peso = htmlspecialchars(strip_tags($this->peso ?? ''));
-        $this->quantidade_inicial = htmlspecialchars(strip_tags($this->quantidade_inicial ?? ''));
+        $this->preco = htmlspecialchars(strip_tags($this->preco));
+        $this->peso = htmlspecialchars(strip_tags($this->peso ?? null));
+        $this->quantidade_disponivel = htmlspecialchars(strip_tags($this->quantidade_disponivel));
         $this->disponivel = isset($this->disponivel) ? ($this->disponivel ? 1 : 0) : 1;
-        $this->categoria = htmlspecialchars(strip_tags($this->categoria ?? ''));
+        $this->categoria = htmlspecialchars(strip_tags($this->categoria));
 
-        // Vincula os novos valores
+        // Vincula
         $stmt->bindParam(':id', $this->id);
         $stmt->bindParam(':nome', $this->nome);
         $stmt->bindParam(':descricao', $this->descricao);
         $stmt->bindParam(':foto', $this->foto);
         $stmt->bindParam(':preco', $this->preco);
         $stmt->bindParam(':peso', $this->peso);
-        $stmt->bindParam(':quantidade_inicial', $this->quantidade_inicial);
+        $stmt->bindParam(':quantidade_disponivel', $this->quantidade_disponivel);
         $stmt->bindParam(':disponivel', $this->disponivel);
         $stmt->bindParam(':categoria', $this->categoria);
 
         if ($stmt->execute()) {
-            if ($stmt->rowCount() > 0) {
-                return true;
-            }
+            return true;
         }
-
         return false;
     }
 
     /**
-     * Deleta uma oferta do banco de dados.
-     *
-     * @return bool True se a deleção foi bem-sucedida, false caso contrário.
+     * Realiza a exclusão lógica de uma oferta (soft delete).
+     * @return bool
      */
     public function deletar() {
-        $query = "DELETE FROM " . $this->table_name . " WHERE id = ?";
+        $query = "UPDATE " . $this->table_name . " SET disponivel = 0 WHERE id = :id";
         $stmt = $this->conn->prepare($query);
 
         $this->id = htmlspecialchars(strip_tags($this->id));
-        $stmt->bindParam(1, $this->id);
+        $stmt->bindParam(':id', $this->id, PDO::PARAM_INT);
 
-        if ($stmt->execute()) {
-            if ($stmt->rowCount() > 0) {
-                return true;
-            }
+        if ($stmt->execute() && $stmt->rowCount() > 0) {
+            return true;
         }
-
         return false;
     }
 }

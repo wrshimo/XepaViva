@@ -76,7 +76,7 @@ $nome_feirante = $_SESSION['usuario_nome'] ?? 'Feirante';
         </div>
     </main>
 
-    <!-- Modal de Oferta (reutilizado de minhas-ofertas.php) -->
+    <!-- Modal de Oferta -->
     <div class="modal fade" id="ofertaModal" tabindex="-1" aria-labelledby="ofertaModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -97,6 +97,13 @@ $nome_feirante = $_SESSION['usuario_nome'] ?? 'Feirante';
                         </div>
                         <div class="row">
                             <div class="col-md-6 mb-3"><label for="peso" class="form-label">Peso Aproximado (Kg)</label><input type="number" class="form-control" id="peso" placeholder="2.5" step="0.1"></div>
+                            <div class="col-md-6 mb-3">
+                                <label for="categoria" class="form-label">Categoria <span class="text-danger">*</span></label>
+                                <select class="form-select" id="categoria" required>
+                                    <option value="" selected disabled>Selecione uma categoria...</option>
+                                    <!-- Opções serão carregadas via JS -->
+                                </select>
+                            </div>
                         </div>
                     </form>
                 </div>

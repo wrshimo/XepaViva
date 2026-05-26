@@ -26,8 +26,10 @@
                         <h1 class="card-title text-center h3 mb-4">Acesse sua conta</h1>
                         <p class="text-center text-muted">Esta é uma tela de login simulada. Selecione seu perfil para continuar.</p>
                         <div class="d-grid gap-3 mt-4">
-                            <a href="feirante.php" class="btn btn-primary btn-lg" style="min-height: 48px;">Sou Feirante (Seu Benedito)</a>
-                            <a href="consumidor.php" class="btn btn-secondary btn-lg" style="min-height: 48px;">Sou Consumidor (Mariana)</a>
+                            <!-- CORRIGIDO: Removido href e adicionado ID para controle via JS -->
+                            <a href="#" id="login-feirante" class="btn btn-primary btn-lg" style="min-height: 48px;">Sou Feirante (Seu Benedito)</a>
+                            <!-- CORRIGIDO: Removido href e adicionado ID para controle via JS -->
+                            <a href="#" id="login-consumidor" class="btn btn-secondary btn-lg" style="min-height: 48px;">Sou Consumidor (Mariana)</a>
                         </div>
                         <hr class="my-4">
                         <p class="text-center text-muted">
@@ -43,6 +45,8 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- CORRIGIDO: Incluído o novo script de login simulado -->
+    <script src="assets/js/simulated-login.js"></script>
     <script src="assets/js/app.js"></script>
 </body>
 </html>

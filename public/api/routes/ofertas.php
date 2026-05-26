@@ -1,7 +1,6 @@
 <?php
-// api/routes/ofertas.php
+// public/api/routes/ofertas.php
 
-// Headers
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8");
 header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE");
@@ -15,153 +14,121 @@ function send_response($data, $statusCode = 200) {
     echo json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
 }
 
-$oferta = new Oferta();
 $method = $_SERVER['REQUEST_METHOD'];
-$input_source = (php_sapi_name() === 'cli') ? 'php://stdin' : 'php://input';
 
 switch ($method) {
     case 'GET':
         try {
-            $stmt = null;
-            if (isset($_GET['feirante_id'])) {
-                $stmt = $oferta->getPorFeirante(intval($_GET['feirante_id']));
-            } 
-            else if (isset($_GET['id'])) {
-                $oferta->id = intval($_GET['id']);
-                if ($oferta->getUm()) {
-                    $oferta_item = [
-                        "id" => $oferta->id,
-                        "feirante_id" => $oferta->feirante_id,
-                        "nome_feirante" => $oferta->nome_feirante,
-                        "produto" => $oferta->nome, 
-                        "descricao" => $oferta->descricao,
-                        "foto" => $oferta->foto,
-                        "preco" => $oferta->preco,
-                        "peso" => $oferta->peso,
-                        "quantidade_disponivel" => $oferta->quantidade_disponivel,
-                        "disponivel" => (bool)$oferta->disponivel,
-                        "categoria" => $oferta->categoria,
-                        "data_criacao" => $oferta->data_criacao,
-                        "data_modificacao" => $oferta->data_modificacao
-                    ];
-                    send_response($oferta_item);
-                } else {
-                    send_response(["mensagem" => "Oferta não encontrada."], 404);
-                }
-                return;
-            } 
-            else {
-                $stmt = $oferta->getTodas();
+            $filtros = [];
+            $ofertaModel = new Oferta();
+
+            // Sanitiza e aplica filtros da URL
+            if (!empty($_GET['q'])) $filtros['q'] = htmlspecialchars($_GET['q'], ENT_QUOTES, 'UTF-8');
+            if (!empty($_GET['categoria'])) $filtros['categoria'] = htmlspecialchars($_GET['categoria'], ENT_QUOTES, 'UTF-8');
+            if (isset($_GET['id'])) $filtros['id'] = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
+            
+            $feirante_id = filter_input(INPUT_GET, 'feirante_id', FILTER_VALIDATE_INT);
+            if ($feirante_id) {
+                $filtros['feirante_id'] = $feirante_id;
             }
 
-            $num = $stmt->rowCount();
-            if ($num > 0) {
-                $ofertas_arr = [];
-                while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                    extract($row);
-                    $oferta_item = [
-                        "id" => $id,
-                        "feirante_id" => $feirante_id,
-                        "nome_feirante" => $nome_feirante,
-                        "produto" => $nome,
-                        "descricao" => $descricao,
-                        "foto" => $foto,
-                        "preco" => $preco,
-                        "peso" => $peso,
-                        "quantidade_disponivel" => $quantidade_disponivel,
-                        "disponivel" => (bool)$disponivel,
-                        "categoria" => $categoria,
-                        "data_criacao" => $data_criacao,
-                        "data_modificacao" => $data_modificacao
-                    ];
-                    array_push($ofertas_arr, $oferta_item);
-                }
-                send_response($ofertas_arr);
-            } else {
-                send_response([]);
+            // LÓGICA DE NEGÓCIOS: SEPARAÇÃO DE PAPÉIS (CONSUMIDOR vs FEIRANTE)
+            if (isset($_GET['disponivel'])) {
+                // Se o filtro `disponivel` é passado explicitamente, ele tem prioridade.
+                $filtros['disponivel'] = filter_var($_GET['disponivel'], FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+            } else if (!$feirante_id) {
+                // Se NENHUM feirante_id foi especificado, é uma busca de consumidor.
+                // Neste caso, FORÇAMOS o filtro para mostrar apenas ofertas disponíveis.
+                $filtros['disponivel'] = true;
             }
+            // Se um feirante_id FOI especificado e `disponivel` não, nenhum filtro de disponibilidade é aplicado,
+            // mostrando ao feirante todas as suas ofertas (ativas e inativas).
+
+            $ofertas = $ofertaModel->buscar($filtros);
+            
+            send_response(['status' => 'success', 'data' => $ofertas]);
+
         } catch (Exception $e) {
-            send_response(["mensagem" => "Erro interno no servidor.", "erro" => $e->getMessage()], 500);
+            send_response(['status' => 'error', 'message' => 'Erro ao buscar ofertas', 'details' => $e->getMessage()], 500);
         }
         break;
 
     case 'POST':
         try {
-            $data = json_decode(file_get_contents($input_source));
-            if (!empty($data->feirante_id) && !empty($data->produto) && isset($data->preco) && isset($data->quantidade_disponivel)) {
-                $oferta->feirante_id = $data->feirante_id;
-                $oferta->nome = $data->produto;
-                $oferta->preco = $data->preco;
-                $oferta->peso = $data->peso ?? null;
-                $oferta->quantidade_inicial = $data->quantidade_disponivel; 
-                $oferta->quantidade_disponivel = $data->quantidade_disponivel;
-                $oferta->descricao = $data->descricao ?? null;
-                $oferta->foto = $data->foto ?? null;
-                $oferta->categoria = $data->categoria ?? null;
-                $oferta->disponivel = $data->disponivel ?? true;
+            $ofertaModel = new Oferta();
+            $data = json_decode(file_get_contents('php://input'));
 
-                if($oferta->criar()){
-                    send_response(["status" => "success", "message" => "Oferta criada com sucesso.", "id" => $oferta->id], 201);
-                } else {
-                    send_response(["status" => "error", "message" => "Não foi possível criar a oferta."], 503);
-                }
+            if (empty($data->feirante_id) || empty($data->nome) || !isset($data->preco) || !isset($data->quantidade_inicial)) {
+                send_response(["status" => "error", "message" => "Dados incompletos para criar oferta."], 400);
+                return;
+            }
+
+            $ofertaModel->feirante_id = $data->feirante_id;
+            $ofertaModel->nome = $data->nome;
+            $ofertaModel->preco = $data->preco;
+            $ofertaModel->quantidade_inicial = $data->quantidade_inicial;
+            $ofertaModel->quantidade_disponivel = $data->quantidade_inicial;
+            $ofertaModel->descricao = $data->descricao ?? null;
+            $ofertaModel->categoria = $data->categoria ?? null;
+
+            if ($ofertaModel->criar()) {
+                send_response(["status" => "success", "message" => "Oferta criada com sucesso.", "id" => $ofertaModel->id], 201);
             } else {
-                send_response(["status" => "error", "message" => "Dados incompletos. Campos obrigatórios: feirante_id, produto, preco, quantidade_disponivel."], 400);
+                send_response(["status" => "error", "message" => "Não foi possível criar a oferta."], 503);
             }
         } catch (Exception $e) {
-            send_response(["status" => "error", "message" => "Erro interno no servidor.", "erro" => $e->getMessage()], 500);
+            send_response(["status" => "error", "message" => "Erro interno no servidor ao criar.", "erro" => $e->getMessage()], 500);
         }
         break;
 
     case 'PUT':
         try {
-            $data = json_decode(file_get_contents($input_source));
-            if (!isset($_GET['id'])) {
-                send_response(["mensagem" => "ID da oferta não fornecido."], 400);
+            $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
+            if (!$id) {
+                send_response(["status" => "error", "message" => "ID da oferta não fornecido."], 400);
                 return;
             }
 
-            if (!empty($data->produto) && isset($data->preco) && isset($data->quantidade_disponivel)) {
-                $oferta->id = intval($_GET['id']);
-                $oferta->nome = $data->produto;
-                $oferta->preco = $data->preco;
-                $oferta->peso = $data->peso ?? null;
-                $oferta->quantidade_inicial = $data->quantidade_disponivel;
-                $oferta->descricao = $data->descricao ?? null;
-                $oferta->foto = $data->foto ?? null;
-                $oferta->categoria = $data->categoria ?? null;
-                $oferta->disponivel = $data->disponivel ?? true;
+            $ofertaParaAtualizar = new Oferta();
+            if (!$ofertaParaAtualizar->carregarPeloId($id)) {
+                send_response(["status" => "error", "message" => "Oferta não encontrada."], 404);
+                return;
+            }
 
-                if($oferta->atualizar()){
-                    send_response(["status" => "success", "message" => "Oferta atualizada com sucesso."]);
-                } else {
-                    send_response(["status" => "error", "message" => "Não foi possível atualizar a oferta. Verifique o ID ou se os dados foram modificados."], 404);
+            $data = json_decode(file_get_contents('php://input'));
+
+            foreach ($data as $key => $value) {
+                if (property_exists($ofertaParaAtualizar, $key)) {
+                    $ofertaParaAtualizar->$key = $value;
                 }
+            }
+
+            if ($ofertaParaAtualizar->atualizar()) {
+                send_response(["status" => "success", "message" => "Oferta atualizada com sucesso."]);
             } else {
-                send_response(["status" => "error", "message" => "Dados incompletos para atualizar. Campos obrigatórios: produto, preco, quantidade_disponivel."], 400);
+                send_response(["status" => "error", "message" => "Não foi possível atualizar a oferta."], 500);
             }
         } catch (Exception $e) {
-            send_response(["status" => "error", "message" => "Erro interno no servidor.", "erro" => $e->getMessage()], 500);
+            send_response(["status" => "error", "message" => "Erro interno no servidor ao atualizar.", "erro" => $e->getMessage()], 500);
         }
         break;
 
     case 'DELETE':
         try {
-            // CORRIGIDO: Ler o ID da oferta a partir do parâmetro da URL ($_GET) em vez do corpo da requisição.
-            if (isset($_GET['id'])) {
-                $oferta->id = intval($_GET['id']);
-
-                // O método deletar() no modelo já faz a exclusão lógica (UPDATE disponivel = 0)
-                if ($oferta->deletar()) {
-                    send_response(["status" => "success", "message" => "Oferta excluída com sucesso."]);
-                } else {
-                    send_response(["status" => "error", "message" => "Não foi possível excluir a oferta. O ID pode não existir."], 503);
-                }
+            $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
+            if (!$id) {
+                send_response(["status" => "error", "message" => "ID da oferta não fornecido."], 400);
+                return;
+            }
+            $ofertaModel = new Oferta();
+            $ofertaModel->id = $id;
+            if ($ofertaModel->deletar()) {
+                send_response(["status" => "success", "message" => "Oferta excluída com sucesso."]);
             } else {
-                send_response(["status" => "error", "message" => "ID da oferta não fornecido na URL."], 400);
+                send_response(["status" => "error", "message" => "Não foi possível excluir a oferta."], 503);
             }
         } catch (Exception $e) {
-            send_response(["status" => "error", "message" => "Erro interno no servidor.", "erro" => $e->getMessage()], 500);
+            send_response(["status" => "error", "message" => "Erro interno no servidor ao deletar.", "erro" => $e->getMessage()], 500);
         }
         break;
 

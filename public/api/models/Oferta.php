@@ -1,14 +1,12 @@
 <?php
-// api/models/Oferta.php
+// public/api/models/Oferta.php
 
 require_once __DIR__ . '/../config/Database.php';
 
 class Oferta {
-
     private $conn;
     private $table_name = "ofertas";
 
-    // Propriedades da Oferta
     public $id;
     public $feirante_id;
     public $nome;
@@ -28,157 +26,141 @@ class Oferta {
         $this->conn = Database::getInstance()->getConnection();
     }
 
-    /**
-     * Lê todos os registros de ofertas disponíveis.
-     * Somente retorna ofertas com disponivel = 1.
-     * @return PDOStatement
-     */
-    public function getTodas() {
-        $query = "SELECT o.*, u.nome as nome_feirante FROM " . $this->table_name . " o LEFT JOIN usuarios u ON o.feirante_id = u.id WHERE o.disponivel = 1 ORDER BY o.data_criacao DESC";
+    // Função para carregar os dados de uma oferta específica
+    public function carregarPeloId($id) {
+        $query = "SELECT * FROM " . $this->table_name . " WHERE id = :id LIMIT 1";
         $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
         $stmt->execute();
-        return $stmt;
-    }
-
-    /**
-     * Lê todas as ofertas disponíveis para um feirante específico.
-     * Somente retorna ofertas com disponivel = 1.
-     * @param int $feirante_id
-     * @return PDOStatement
-     */
-    public function getPorFeirante($feirante_id) {
-        $query = "SELECT o.*, u.nome as nome_feirante FROM " . $this->table_name . " o LEFT JOIN usuarios u ON o.feirante_id = u.id WHERE o.feirante_id = ? AND o.disponivel = 1 ORDER BY o.data_criacao DESC";
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(1, $feirante_id, PDO::PARAM_INT);
-        $stmt->execute();
-        return $stmt;
-    }
-
-    /**
-     * Lê um único registro de oferta pelo ID.
-     * @return bool
-     */
-    public function getUm() {
-        $query = "SELECT o.*, u.nome as nome_feirante FROM " . $this->table_name . " o LEFT JOIN usuarios u ON o.feirante_id = u.id WHERE o.id = ? LIMIT 0,1";
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(1, $this->id);
-        $stmt->execute();
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        if ($row) {
-            $this->feirante_id = $row['feirante_id'];
-            $this->nome = $row['nome'];
-            $this->descricao = $row['descricao'];
-            $this->foto = $row['foto'];
-            $this->preco = $row['preco'];
-            $this->peso = $row['peso'];
-            $this->quantidade_inicial = $row['quantidade_inicial'];
-            $this->quantidade_disponivel = $row['quantidade_disponivel'];
-            $this->disponivel = $row['disponivel'];
-            $this->categoria = $row['categoria'];
-            $this->data_criacao = $row['data_criacao'];
-            $this->data_modificacao = $row['data_modificacao'];
-            $this->nome_feirante = $row['nome_feirante'];
+        
+        if ($stmt->rowCount() > 0) {
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            // Atribui os valores da linha às propriedades do objeto
+            foreach ($row as $key => $value) {
+                if (property_exists($this, $key)) {
+                    $this->$key = $value;
+                }
+            }
             return true;
         }
         return false;
     }
+    
+    public function buscar($filtros = []) {
+        $query = "SELECT o.id, o.feirante_id, o.nome, o.descricao, o.foto, o.preco, o.peso, 
+                       o.quantidade_disponivel, o.disponivel, o.categoria, o.data_criacao, o.data_modificacao,
+                       u.nome as nome_feirante
+                  FROM " . $this->table_name . " o
+                  LEFT JOIN usuarios u ON o.feirante_id = u.id";
+        $where_clauses = [];
+        $params = [];
+        if (!empty($filtros['q'])) {
+            $where_clauses[] = "(o.nome LIKE :q OR o.descricao LIKE :q OR u.nome LIKE :q)";
+            $params[':q'] = '%' . $filtros['q'] . '%';
+        }
+        if (!empty($filtros['categoria'])) {
+            $where_clauses[] = "o.categoria = :categoria";
+            $params[':categoria'] = $filtros['categoria'];
+        }
+        if (isset($filtros['disponivel'])) {
+            $where_clauses[] = "o.disponivel = :disponivel";
+            $params[':disponivel'] = filter_var($filtros['disponivel'], FILTER_VALIDATE_BOOLEAN) ? 1 : 0;
+        }
+        if (!empty($filtros['id'])) {
+            $where_clauses[] = "o.id = :id";
+            $params[':id'] = $filtros['id'];
+        }
+        if (!empty($filtros['feirante_id'])) {
+            $where_clauses[] = "o.feirante_id = :feirante_id";
+            $params[':feirante_id'] = $filtros['feirante_id'];
+        }
+        if (!empty($where_clauses)) {
+            $query .= " WHERE " . implode(" AND ", $where_clauses);
+        }
+        $query .= " ORDER BY o.data_criacao DESC";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute($params);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 
-    /**
-     * Cria uma nova oferta no banco de dados.
-     * @return bool
-     */
     public function criar() {
-        $query = "INSERT INTO " . $this->table_name . " SET feirante_id=:feirante_id, nome=:nome, descricao=:descricao, foto=:foto, preco=:preco, peso=:peso, quantidade_disponivel=:quantidade_disponivel, quantidade_inicial=:quantidade_disponivel, categoria=:categoria, disponivel=1";
+        $query = "INSERT INTO " . $this->table_name . " SET feirante_id=:feirante_id, nome=:nome, descricao=:descricao, preco=:preco, quantidade_inicial=:quantidade_inicial, quantidade_disponivel=:quantidade_disponivel, categoria=:categoria, disponivel=1";
         $stmt = $this->conn->prepare($query);
 
-        // Sanitiza
-        $this->feirante_id = htmlspecialchars(strip_tags($this->feirante_id));
+        $this->feirante_id = intval($this->feirante_id);
         $this->nome = htmlspecialchars(strip_tags($this->nome));
-        $this->descricao = htmlspecialchars(strip_tags($this->descricao));
-        $this->foto = htmlspecialchars(strip_tags($this->foto ?? ''));
-        $this->preco = htmlspecialchars(strip_tags($this->preco));
-        $this->peso = htmlspecialchars(strip_tags($this->peso ?? null));
-        $this->quantidade_disponivel = htmlspecialchars(strip_tags($this->quantidade_disponivel));
-        $this->categoria = htmlspecialchars(strip_tags($this->categoria));
-        
-        // Vincula
+        $this->descricao = htmlspecialchars(strip_tags($this->descricao ?? ''));
+        $this->preco = floatval($this->preco);
+        $this->quantidade_inicial = intval($this->quantidade_inicial);
+        $this->quantidade_disponivel = intval($this->quantidade_disponivel);
+        $this->categoria = htmlspecialchars(strip_tags($this->categoria ?? ''));
+
         $stmt->bindParam(":feirante_id", $this->feirante_id);
         $stmt->bindParam(":nome", $this->nome);
         $stmt->bindParam(":descricao", $this->descricao);
-        $stmt->bindParam(":foto", $this->foto);
         $stmt->bindParam(":preco", $this->preco);
-        $stmt->bindParam(":peso", $this->peso);
+        $stmt->bindParam(":quantidade_inicial", $this->quantidade_inicial);
         $stmt->bindParam(":quantidade_disponivel", $this->quantidade_disponivel);
         $stmt->bindParam(":categoria", $this->categoria);
 
-        if($stmt->execute()) {
+        if($stmt->execute()){
             $this->id = $this->conn->lastInsertId();
             return true;
         }
         return false;
     }
 
-    /**
-     * Atualiza uma oferta existente no banco de dados.
-     * @return bool
-     */
+    // FUNÇÃO ATUALIZAR() COMPLETAMENTE REESCRITA PARA SER ROBUSTA E EXPLÍCITA
     public function atualizar() {
-        $query = "UPDATE " . $this->table_name . "
-                SET
+        $query = "UPDATE " . $this->table_name . " SET
                     nome = :nome,
                     descricao = :descricao,
-                    foto = :foto,
                     preco = :preco,
-                    peso = :peso, 
                     quantidade_disponivel = :quantidade_disponivel,
                     disponivel = :disponivel,
                     categoria = :categoria
-                WHERE
+                  WHERE
                     id = :id";
+
         $stmt = $this->conn->prepare($query);
 
-        // Sanitiza
-        $this->id = htmlspecialchars(strip_tags($this->id));
+        // Sanitização e formatação dos dados
+        $this->id = intval($this->id);
         $this->nome = htmlspecialchars(strip_tags($this->nome));
         $this->descricao = htmlspecialchars(strip_tags($this->descricao));
-        $this->foto = htmlspecialchars(strip_tags($this->foto ?? ''));
-        $this->preco = htmlspecialchars(strip_tags($this->preco));
-        $this->peso = htmlspecialchars(strip_tags($this->peso ?? null));
-        $this->quantidade_disponivel = htmlspecialchars(strip_tags($this->quantidade_disponivel));
-        $this->disponivel = isset($this->disponivel) ? ($this->disponivel ? 1 : 0) : 1;
+        $this->preco = floatval($this->preco);
+        $this->quantidade_disponivel = intval($this->quantidade_disponivel);
+        $this->disponivel = filter_var($this->disponivel, FILTER_VALIDATE_BOOLEAN) ? 1 : 0;
         $this->categoria = htmlspecialchars(strip_tags($this->categoria));
-
-        // Vincula
-        $stmt->bindParam(':id', $this->id);
+        
+        // Binding explícito para cada parâmetro
+        $stmt->bindParam(':id', $this->id, PDO::PARAM_INT);
         $stmt->bindParam(':nome', $this->nome);
         $stmt->bindParam(':descricao', $this->descricao);
-        $stmt->bindParam(':foto', $this->foto);
         $stmt->bindParam(':preco', $this->preco);
-        $stmt->bindParam(':peso', $this->peso);
-        $stmt->bindParam(':quantidade_disponivel', $this->quantidade_disponivel);
-        $stmt->bindParam(':disponivel', $this->disponivel);
+        $stmt->bindParam(':quantidade_disponivel', $this->quantidade_disponivel, PDO::PARAM_INT);
+        $stmt->bindParam(':disponivel', $this->disponivel, PDO::PARAM_INT);
         $stmt->bindParam(':categoria', $this->categoria);
 
+        // A execução agora é segura e previsível
         if ($stmt->execute()) {
             return true;
         }
+        
+        // Em caso de erro, logar pode ser uma boa ideia
+        // error_log($stmt->errorInfo()[2]);
         return false;
     }
 
-    /**
-     * Realiza a exclusão lógica de uma oferta (soft delete).
-     * @return bool
-     */
     public function deletar() {
         $query = "UPDATE " . $this->table_name . " SET disponivel = 0 WHERE id = :id";
         $stmt = $this->conn->prepare($query);
+        
+        $this->id = intval($this->id);
+        $stmt->bindParam(":id", $this->id);
 
-        $this->id = htmlspecialchars(strip_tags($this->id));
-        $stmt->bindParam(':id', $this->id, PDO::PARAM_INT);
-
-        if ($stmt->execute() && $stmt->rowCount() > 0) {
-            return true;
+        if ($stmt->execute()) {
+            return $stmt->rowCount() > 0;
         }
         return false;
     }

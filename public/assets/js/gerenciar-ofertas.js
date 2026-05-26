@@ -1,252 +1,229 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-    let API_URL = '/api/routes/ofertas.php';
-    const CATEGORIAS_API_URL = '/api/routes/categorias.php';
+    const API_URL_OFERTAS = '/api/routes/ofertas.php';
+    const API_URL_CATEGORIAS = '/api/routes/categorias.php';
 
-    const tabelaOfertas = document.getElementById('tabelaOfertas');
+    const tabelaOfertasBody = document.getElementById('tabelaOfertas');
     const ofertasPlaceholder = document.getElementById('ofertas-placeholder');
-    
-    const modalElement = document.getElementById('ofertaModal');
-    const ofertaModal = new bootstrap.Modal(modalElement);
-    const modalLabel = document.getElementById('ofertaModalLabel');
-    const formOferta = document.getElementById('formOferta');
-    const ofertaIdInput = document.getElementById('ofertaId');
     const feiranteIdInput = document.getElementById('feirante_id');
 
-    // Campos do formulário
-    const produtoInput = document.getElementById('produto');
-    const descricaoInput = document.getElementById('descricao');
-    const precoInput = document.getElementById('preco');
-    const quantidadeInput = document.getElementById('quantidade_disponivel');
-    const pesoInput = document.getElementById('peso');
-    const categoriaSelect = document.getElementById('categoria');
+    const ofertaModal = new bootstrap.Modal(document.getElementById('ofertaModal'));
+    const formOferta = document.getElementById('formOferta');
+    const ofertaModalLabel = document.getElementById('ofertaModalLabel');
+    const ofertaIdInput = document.getElementById('ofertaId');
+    const quantidadeDisponivelInput = document.getElementById('quantidade_disponivel');
 
-    const btnNovaOferta = document.getElementById('btnNovaOferta');
-    
-    // Modal de exclusão
-    const confirmDeleteModalElement = document.getElementById('confirmDeleteModal');
-    const confirmDeleteModal = new bootstrap.Modal(confirmDeleteModalElement);
-    const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
-    const nomeProdutoExclusao = document.getElementById('nomeProdutoExclusao');
-    let ofertaIdParaExcluir = null;
+    let currentUser = null;
 
-    /**
-     * Carrega as categorias da API e popula o select no formulário.
-     */
+    const init = () => {
+        currentUser = JSON.parse(localStorage.getItem('xepa-user'));
+        if (!currentUser || currentUser.tipo !== 'feirante') {
+            setPlaceholderState('erro', 'Usuário inválido ou não autenticado.');
+            return;
+        }
+        if (feiranteIdInput) {
+            feiranteIdInput.value = currentUser.id;
+        }
+        carregarCategorias();
+        carregarOfertas();
+        setupEventListeners();
+    };
+
+    const carregarOfertas = async () => {
+        if (!currentUser) return;
+        setPlaceholderState('loading');
+        try {
+            // CORREÇÃO DEFINITIVA (CACHE-BUSTING): Adiciona um parâmetro único à URL para forçar o navegador
+            // a buscar dados novos do servidor, ignorando completamente qualquer cache.
+            const cacheBuster = `_=${new Date().getTime()}`;
+            const url = `${API_URL_OFERTAS}?feirante_id=${currentUser.id}&${cacheBuster}`;
+            
+            const response = await fetch(url);
+            const result = await response.json();
+
+            if (result.status === 'success' && Array.isArray(result.data)) {
+                 if (result.data.length > 0) {
+                    renderTabela(result.data);
+                } else {
+                    setPlaceholderState('vazio');
+                }
+            } else {
+                setPlaceholderState('vazio');
+            }
+        } catch (error) {
+            console.error('Erro ao carregar ofertas:', error);
+            setPlaceholderState('erro', 'Falha ao carregar ofertas.');
+        }
+    };
+
     const carregarCategorias = async () => {
         try {
-            const response = await fetch(CATEGORIAS_API_URL);
-            if (!response.ok) {
-                throw new Error('Não foi possível carregar as categorias.');
-            }
-            const resultado = await response.json();
-            if (resultado.sucesso && resultado.dados) {
-                categoriaSelect.innerHTML = '<option value="" selected disabled>Selecione uma categoria...</option>'; // Reset
-                resultado.dados.forEach(categoria => {
+            const response = await fetch(API_URL_CATEGORIAS);
+            const result = await response.json();
+            if (result.status === 'success' && result.data) {
+                const categoriaSelect = document.getElementById('categoria');
+                categoriaSelect.innerHTML = '<option value="" selected disabled>Selecione...</option>';
+                result.data.forEach(cat => {
                     const option = document.createElement('option');
-                    option.value = categoria;
-                    option.textContent = categoria;
+                    option.value = cat.nome;
+                    option.textContent = cat.nome;
                     categoriaSelect.appendChild(option);
                 });
             }
         } catch (error) {
             console.error('Erro ao carregar categorias:', error);
-            showToast('Falha ao carregar categorias. Tente recarregar a página.', 'error');
         }
     };
 
+    const renderTabela = (ofertas) => {
+        tabelaOfertasBody.innerHTML = '';
+        ofertasPlaceholder.style.display = 'none';
+        tabelaOfertasBody.style.display = '';
+        ofertas.forEach(oferta => {
+            const tr = document.createElement('tr');
+            const isChecked = oferta.disponivel == 1 ? 'checked' : '';
+            tr.innerHTML = `
+                <td>${oferta.nome}</td>
+                <td>R$ ${parseFloat(oferta.preco).toFixed(2).replace('.', ',')}</td>
+                <td>${oferta.quantidade_disponivel}</td>
+                <td><span class="badge bg-secondary">${oferta.categoria || 'N/A'}</span></td>
+                <td class="text-center">
+                    <div class="form-check form-switch d-inline-block align-middle me-2">
+                        <input class="form-check-input status-switch" type="checkbox" role="switch" data-id="${oferta.id}" ${isChecked}>
+                    </div>
+                    <button class="btn btn-sm btn-outline-primary btn-edit" data-id="${oferta.id}" style="min-width: 44px; min-height: 44px;">Editar</button>
+                </td>
+            `;
+            tabelaOfertasBody.appendChild(tr);
+        });
+    };
 
-    /**
-     * Busca as ofertas do feirante logado na API e as exibe na tabela.
-     */
-    const carregarOfertas = async () => {
-        ofertasPlaceholder.style.display = 'block';
-        tabelaOfertas.innerHTML = '';
-        
-        const feiranteId = feiranteIdInput.value;
+    const setPlaceholderState = (state, message = '') => {
+        tabelaOfertasBody.style.display = 'none';
+        ofertasPlaceholder.style.display = '';
+        switch (state) {
+            case 'loading':
+                ofertasPlaceholder.innerHTML = '<div class="spinner-border text-success" role="status"></div><p class="mt-2">Buscando suas ofertas...</p>';
+                break;
+            case 'vazio':
+                ofertasPlaceholder.innerHTML = '<p>Nenhuma oferta encontrada. Clique em "Anunciar Nova Xepa" para começar.</p>';
+                break;
+            case 'erro':
+                ofertasPlaceholder.innerHTML = `<p class="text-danger">${message}</p>`;
+                break;
+        }
+    };
 
+    const setupEventListeners = () => {
+        formOferta.addEventListener('submit', handleSalvarOferta);
+        document.getElementById('btnNovaOferta').addEventListener('click', handleAbrirModalCriacao);
+        tabelaOfertasBody.addEventListener('click', (e) => {
+            if (e.target.classList.contains('btn-edit')) {
+                handleAbrirModalEdicao(e.target.dataset.id);
+            }
+            if (e.target.classList.contains('status-switch')) {
+                handleToggleDisponibilidade(e.target.dataset.id, e.target.checked);
+            }
+        });
+    };
+
+    const handleToggleDisponibilidade = async (id, isDisponivel) => {
         try {
-            const response = await fetch(`${API_URL}?feirante_id=${feiranteId}`);
-            if (!response.ok) {
-                throw new Error(`A resposta da rede não foi OK: ${response.statusText}`);
-            }
-            const ofertas = await response.json();
-
-            ofertasPlaceholder.style.display = 'none';
-
-            if (ofertas && ofertas.length > 0) {
-                ofertas.forEach(oferta => {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td>${oferta.produto}</td>
-                        <td>R$ ${parseFloat(oferta.preco).toFixed(2).replace('.', ',')}</td>
-                        <td>${oferta.quantidade_disponivel}</td>
-                        <td><span class="badge bg-info text-dark">${oferta.categoria || 'N/A'}</span></td>
-                        <td class="text-center">
-                            <button class="btn btn-sm btn-outline-secondary me-2 editar-btn" style="min-width: 44px; min-height: 44px;" data-id="${oferta.id}"><i class="bi bi-pencil"></i></button>
-                            <button class="btn btn-sm btn-outline-danger deletar-btn" style="min-width: 44px; min-height: 44px;" data-id="${oferta.id}" data-nome="${oferta.produto}"><i class="bi bi-trash"></i></button>
-                        </td>
-                    `;
-                    tabelaOfertas.appendChild(tr);
-                });
+            const response = await fetch(`${API_URL_OFERTAS}?id=${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ disponivel: isDisponivel ? 1 : 0 })
+            });
+            const result = await response.json();
+            if (result.status === 'success') {
+                showToast('Status da oferta atualizado com sucesso.', 'success');
+                carregarOfertas();
             } else {
-                tabelaOfertas.innerHTML = '<tr><td colspan="5" class="text-center">Nenhuma oferta cadastrada.</td></tr>';
+                throw new Error(result.message);
             }
-        } catch (error) {
-            console.error('Erro ao carregar ofertas:', error);
-            ofertasPlaceholder.style.display = 'none';
-            tabelaOfertas.innerHTML = '<tr><td colspan="5" class="text-center text-danger">Erro ao carregar ofertas. Tente novamente mais tarde.</td></tr>';
+        } catch(error) {
+            showToast(error.message || 'Falha ao atualizar o status da oferta.', 'error');
+            carregarOfertas(); 
         }
     };
 
-    /**
-     * Reseta e prepara o modal para uma nova oferta.
-     */
-    btnNovaOferta.addEventListener('click', () => {
-        modalLabel.textContent = 'Anunciar Nova Xepa';
+    const handleAbrirModalCriacao = () => {
         formOferta.reset();
-        ofertaIdInput.value = '';
         formOferta.classList.remove('was-validated');
-    });
+        ofertaIdInput.value = '';
+        ofertaModalLabel.textContent = 'Anunciar Nova Xepa';
+        quantidadeDisponivelInput.readOnly = false;
+        ofertaModal.show();
+    };
 
-    /**
-     * Manipula o envio do formulário, seja para criar ou atualizar uma oferta.
-     */
-    formOferta.addEventListener('submit', async (event) => {
+    const handleAbrirModalEdicao = async (id) => {
+        formOferta.reset();
+        formOferta.classList.remove('was-validated');
+        try {
+            const response = await fetch(`${API_URL_OFERTAS}?id=${id}`);
+            const result = await response.json();
+            if (result.status === 'success' && result.data && result.data.length > 0) {
+                const oferta = result.data[0]; 
+                ofertaIdInput.value = oferta.id;
+                document.getElementById('produto').value = oferta.nome;
+                document.getElementById('descricao').value = oferta.descricao;
+                document.getElementById('preco').value = oferta.preco;
+                document.getElementById('quantidade_disponivel').value = oferta.quantidade_disponivel;
+                document.getElementById('peso').value = oferta.peso;
+                document.getElementById('categoria').value = oferta.categoria;
+                quantidadeDisponivelInput.readOnly = true;
+                ofertaModalLabel.textContent = 'Editar Oferta';
+                ofertaModal.show();
+            } else {
+                showToast(result.message || 'Falha ao carregar dados da oferta para edição.', 'error');
+            }
+        } catch(e) { 
+            console.error(e);
+            showToast('Erro de comunicação ao tentar editar oferta.', 'error');
+        }
+    };
+
+    const handleSalvarOferta = async (event) => {
         event.preventDefault();
-        event.stopPropagation();
-
         if (!formOferta.checkValidity()) {
+            event.stopPropagation();
             formOferta.classList.add('was-validated');
             return;
         }
-
         const id = ofertaIdInput.value;
-        const dadosOferta = {
-            feirante_id: feiranteIdInput.value,
-            produto: produtoInput.value,
-            descricao: descricaoInput.value,
-            preco: parseFloat(precoInput.value),
-            quantidade_disponivel: parseInt(quantidadeInput.value),
-            peso: pesoInput.value ? parseFloat(pesoInput.value) : null,
-            categoria: categoriaSelect.value
-        };
-
         const method = id ? 'PUT' : 'POST';
-        let url = id ? `${API_URL}?id=${id}` : API_URL;
-
+        const url = id ? `${API_URL_OFERTAS}?id=${id}` : API_URL_OFERTAS;
+        const dadosOferta = {
+            feirante_id: currentUser.id,
+            nome: document.getElementById('produto').value,
+            descricao: document.getElementById('descricao').value,
+            preco: document.getElementById('preco').value,
+            quantidade_disponivel: quantidadeDisponivelInput.value,
+            peso: document.getElementById('peso').value || null,
+            categoria: document.getElementById('categoria').value,
+            unidade_medida: 'kit' 
+        };
+        if (method === 'POST') {
+            dadosOferta.quantidade_inicial = quantidadeDisponivelInput.value;
+        }
         try {
             const response = await fetch(url, {
                 method: method,
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(dadosOferta)
             });
-
-            const resultado = await response.json();
-
-            if (resultado.status === 'success') {
+            const result = await response.json();
+            if (result.status === 'success') {
+                showToast(result.message, 'success');
                 ofertaModal.hide();
-                carregarOfertas(); 
-                showToast(resultado.message, 'success');
+                carregarOfertas();
             } else {
-                throw new Error(resultado.message || 'Erro desconhecido ao salvar oferta.');
+                throw new Error(result.message);
             }
-        } catch (error) {
-            console.error('Erro ao salvar oferta:', error);
-            showToast(error.message, 'error');
-        }
-    });
-
-    /**
-     * Prepara e exibe o modal de edição com os dados da oferta clicada.
-     * @param {number} id - O ID da oferta a ser editada.
-     */
-    const abrirModalEdicao = async (id) => {
-        try {
-            const response = await fetch(`${API_URL}?id=${id}`);
-            if (!response.ok) {
-                throw new Error('Não foi possível carregar os dados da oferta.');
-            }
-            const oferta = await response.json();
-
-            modalLabel.textContent = 'Editar Oferta';
-            ofertaIdInput.value = oferta.id;
-            produtoInput.value = oferta.produto;
-            descricaoInput.value = oferta.descricao;
-            precoInput.value = oferta.preco;
-            quantidadeInput.value = oferta.quantidade_disponivel;
-            pesoInput.value = oferta.peso;
-            categoriaSelect.value = oferta.categoria;
-
-            formOferta.classList.remove('was-validated');
-            ofertaModal.show();
-
-        } catch (error) {
-            console.error('Erro ao buscar dados para edição:', error);
-            showToast(error.message, 'error');
+        } catch(error) {
+            showToast(error.message || 'Erro ao salvar a oferta.', 'error');
         }
     };
-    
-    /**
-     * Prepara e exibe o modal de confirmação para exclusão.
-     * @param {number} id - O ID da oferta a ser excluída.
-     * @param {string} nome - O nome do produto da oferta.
-     */
-    const abrirModalExclusao = (id, nome) => {
-        ofertaIdParaExcluir = id;
-        nomeProdutoExclusao.textContent = nome;
-        confirmDeleteModal.show();
-    };
 
-    /**
-     * Delega os eventos de clique na tabela para os botões de editar e excluir.
-     */
-    tabelaOfertas.addEventListener('click', (event) => {
-        const target = event.target.closest('button');
-        if (!target) return;
-
-        const id = target.dataset.id;
-        if (target.classList.contains('editar-btn')) {
-            abrirModalEdicao(id);
-        }
-        if (target.classList.contains('deletar-btn')) {
-            const nome = target.dataset.nome;
-            abrirModalExclusao(id, nome);
-        }
-    });
-
-    /**
-     * Manipula a confirmação da exclusão de uma oferta.
-     */
-    confirmDeleteBtn.addEventListener('click', async () => {
-        if (!ofertaIdParaExcluir) return;
-
-        try {
-            const response = await fetch(`${API_URL}?id=${ofertaIdParaExcluir}`, { // O ID vai na URL
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            const resultado = await response.json();
-
-            if (resultado.status === 'success') {
-                confirmDeleteModal.hide();
-                carregarOfertas(); 
-                showToast(resultado.message, 'success');
-            } else {
-                throw new Error(resultado.message || 'Erro ao excluir a oferta.');
-            }
-        } catch (error) {
-            console.error('Erro ao excluir oferta:', error);
-            showToast(error.message, 'error');
-        }
-        ofertaIdParaExcluir = null;
-    });
-
-    
-    // --- INICIALIZAÇÃO ---
-    carregarCategorias();
-    carregarOfertas();
+    init();
 });

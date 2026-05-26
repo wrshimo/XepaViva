@@ -9,6 +9,35 @@ body {
     min-height: 44px; /* Garante acessibilidade de toque */
 }
 
+/* Estilo para o Card de Oferta */
+.card {
+    position: relative; /* Necessário para o posicionamento do carimbo */
+    overflow: hidden;   /* Garante que o carimbo não vaze para fora */
+}
+
+/* Carimbo de "Esgotado" */
+.esgotado-stamp {
+    position: absolute;
+    top: 25px;
+    right: -45px;
+    transform: rotate(45deg);
+    background-color: #dc3545; /* Vermelho Bootstrap */
+    color: white;
+    padding: 5px 50px;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 1.2rem;
+    z-index: 10;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+/* Filtro para a imagem quando o produto está esgotado */
+.card-esgotado .card-img-top {
+    filter: grayscale(100%);
+    opacity: 0.7;
+}
+
+
 /* ------------------------- */
 /* Modo de Alto Contraste    */
 /* ------------------------- */
@@ -108,3 +137,14 @@ body.high-contrast {
 .high-contrast canvas {
     border: 1px solid #000000;
 }
+
+/* Carimbo em alto contraste */
+.high-contrast .esgotado-stamp {
+    background-color: #000000 !important;
+    color: #FFFFFF !important;
+}
+
+.high-contrast .card-esgotado .card-img-top {
+    filter: grayscale(100%) brightness(50%);
+}
+

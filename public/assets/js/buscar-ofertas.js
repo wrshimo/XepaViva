@@ -16,14 +16,12 @@ document.addEventListener('DOMContentLoaded', () => {
     let debounceTimer;
     let ofertasAtuais = [];
 
-    // Função restaurada para ser simples e eficiente
+    // Função para buscar e renderizar as ofertas
     const buscarERenderizarOfertas = async () => {
         const termo = filtroBusca.value.trim();
         const categoria = filtroCategoria.value;
         const baseUrl = '/api/routes/ofertas.php';
         
-        // ETAPA 2: A chamada à API volta a pedir apenas o que precisa (`disponivel=1`).
-        // A API agora retorna a lista correta, incluindo ofertas com quantidade zero.
         const params = new URLSearchParams({ disponivel: '1' }); 
 
         if (termo) params.append('q', termo);
@@ -52,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // Nenhuma mudança necessária aqui. A lógica de renderização já estava correta.
+    // Função para renderizar os cards das ofertas
     const renderCards = (ofertas) => {
         ofertasContainer.innerHTML = '';
         ofertas.forEach(oferta => {
@@ -60,16 +58,16 @@ document.addEventListener('DOMContentLoaded', () => {
             card.className = 'col';
             
             const isEsgotado = parseInt(oferta.quantidade_disponivel, 10) === 0;
-
             const cardInnerClasses = isEsgotado ? "card-esgotado" : "";
             const stampHTML = isEsgotado ? '<div class="esgotado-stamp">Esgotado</div>' : '';
-
+            
+            // ** ALTERAÇÃO APLICADA AQUI **
             card.innerHTML = `
                 <div class="card h-100 shadow-sm ${cardInnerClasses}">
                     ${stampHTML}
-                    <img src="${oferta.foto || 'https://placehold.co/300x200/198754/FFFFFF?text=XepaViva'}" class="card-img-top" alt="${oferta.nome}">
                     <div class="card-body d-flex flex-column">
                         <h5 class="card-title">${oferta.nome}</h5>
+                        ${oferta.descricao ? `<p class="card-text text-secondary mb-2">${oferta.descricao}</p>` : ''}
                         <p class="card-text text-muted small">Feirante: ${oferta.nome_feirante}</p>
                         <div class="mt-auto pt-3">
                             <p class="card-text fs-5 fw-bold text-success mb-2">R$ ${parseFloat(oferta.preco).toFixed(2).replace('.', ',')}</p>

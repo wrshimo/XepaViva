@@ -1,3 +1,7 @@
+<?php
+session_start();
+ob_start(); // Inicia o buffer de saída
+?>
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -5,11 +9,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login | XepaViva</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <link href="assets/css/style.css" rel="stylesheet">
     <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml">
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#2ECC71">
 </head>
 <body class="bg-light">
 
@@ -24,13 +25,25 @@
                 <div class="card shadow-sm">
                     <div class="card-body p-4">
                         <h1 class="card-title text-center h3 mb-4">Acesse sua conta</h1>
-                        <p class="text-center text-muted">Esta é uma tela de login simulada. Selecione seu perfil para continuar.</p>
-                        <div class="d-grid gap-3 mt-4">
-                            <!-- CORRIGIDO: Removido href e adicionado ID para controle via JS -->
-                            <a href="#" id="login-feirante" class="btn btn-primary btn-lg" style="min-height: 48px;">Sou Feirante (Seu Benedito)</a>
-                            <!-- CORRIGIDO: Removido href e adicionado ID para controle via JS -->
-                            <a href="#" id="login-consumidor" class="btn btn-secondary btn-lg" style="min-height: 48px;">Sou Consumidor (Mariana)</a>
-                        </div>
+                        
+                        <!-- Contêiner de Erro para o JavaScript -->
+                        <div id="loginError" class="alert alert-danger" style="display: none;"></div>
+
+                        <!-- Formulário CORRIGIDO: sem 'action' e com 'id' -->
+                        <form id="loginForm" novalidate>
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="email" name="email" required>
+                            </div>
+                            <div class="mb-4">
+                                <label for="senha" class="form-label">Senha</label>
+                                <input type="password" class="form-control" id="senha" name="senha" required>
+                            </div>
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary btn-lg" style="min-height: 48px;">Entrar</button>
+                            </div>
+                        </form>
+
                         <hr class="my-4">
                         <p class="text-center text-muted">
                             Novo por aqui? <a href="registro.php">Crie sua conta</a>
@@ -45,8 +58,10 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- CORRIGIDO: Incluído o novo script de login simulado -->
-    <script src="assets/js/simulated-login.js"></script>
-    <script src="assets/js/app.js"></script>
+    <!-- Script CORRIGIDO: incluindo o auth.js -->
+    <script src="assets/js/auth.js"></script>
 </body>
 </html>
+<?php
+ob_end_flush(); // Envia o buffer de saída para o navegador
+?>

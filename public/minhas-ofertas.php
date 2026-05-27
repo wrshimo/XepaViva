@@ -1,9 +1,12 @@
 <?php
 session_start();
 
-// ID do feirante logado (deve vir da sessão)
-// Para fins de desenvolvimento, usamos 1 se não estiver logado.
-$feirante_id = $_SESSION['usuario_id'] ?? 1;
+if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_tipo'] !== 'Feirante') {
+    header("Location: login.php");
+    exit();
+}
+
+$feirante_id = $_SESSION['usuario_id'];
 
 ?>
 <!DOCTYPE html>
@@ -19,24 +22,39 @@ $feirante_id = $_SESSION['usuario_id'] ?? 1;
     <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml">
 </head>
 <body>
+    <!-- Contêiner de Toasts para notificações -->
     <div id="toastContainer" class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1081"></div>
-    <header class="navbar navbar-dark bg-success sticky-top">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="feirante.php"><img src="assets/images/logo-white.svg" alt="Logo XepaViva" width="120"></a>
-            <div class="d-flex align-items-center">
-                <button id="highContrastToggle" class="btn btn-outline-light me-2"><i class="bi bi-sun"></i></button>
-                <a href="index.php" class="btn btn-outline-light">Sair</a>
+
+    <!-- CABEÇALHO UNIFICADO (copiado de feirante.php) -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-success shadow-sm">
+        <div class="container">
+            <a class="navbar-brand" href="feirante.php">
+                <img src="./assets/images/logo-white.svg" alt="XepaViva" width="120">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item">
+                        <a class="nav-link" href="feirante.php"><i class="bi bi-house-door-fill me-1"></i>Início</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="minhas-ofertas.php" aria-current="page"><i class="bi bi-list-check me-1"></i>Minhas Ofertas</a>
+                    </li>
+                    <li class="nav-item me-lg-2">
+                        <a class="nav-link" href="logout.php"><i class="bi bi-box-arrow-right me-1"></i>Sair</a>
+                    </li>
+                    <li class="nav-item mt-2 mt-lg-0">
+                        <button id="highContrastToggle" class="btn btn-outline-light"><i class="bi bi-sun"></i></button>
+                    </li>
+                </ul>
             </div>
         </div>
-    </header>
-    <nav class="bg-light border-bottom">
-        <div class="container d-flex justify-content-center">
-            <ul class="nav nav-pills">
-                <li class="nav-item"><a href="feirante.php" class="nav-link">Painel</a></li>
-                <li class="nav-item"><a href="minhas-ofertas.php" class="nav-link active" aria-current="page">Minhas Ofertas</a></li>
-            </ul>
-        </div>
     </nav>
+
+    <!-- O header e a nav secundária foram removidos -->
+
     <main class="container mt-4">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h1 class="h2">Minhas Ofertas</h1>
@@ -55,13 +73,10 @@ $feirante_id = $_SESSION['usuario_id'] ?? 1;
                         <th class="text-center">Ações</th>
                     </tr>
                 </thead>
-                <tbody id="tabelaOfertas">
-                    <!-- Linhas da tabela serão inseridas aqui dinamicamente -->
-                </tbody>
+                <tbody id="tabelaOfertas"></tbody>
             </table>
-             <div id="ofertas-placeholder" class="text-center py-5" style="display: none;">
-                <div class="spinner-border text-success" role="status"><span class="visually-hidden">Carregando...</span></div>
-                <p class="mt-2">Buscando suas ofertas...</p>
+             <div id="ofertas-placeholder" class="text-center py-5">
+                 <!-- Estado inicial é definido pelo JS -->
             </div>
         </div>
     </main>
@@ -90,8 +105,7 @@ $feirante_id = $_SESSION['usuario_id'] ?? 1;
                             <div class="col-md-6 mb-3">
                                 <label for="categoria" class="form-label">Categoria <span class="text-danger">*</span></label>
                                 <select class="form-select" id="categoria" required>
-                                    <option value="" selected disabled>Selecione uma categoria...</option>
-                                    <!-- Opções serão carregadas via JS -->
+                                    <option value="" selected disabled>Selecione...</option>
                                 </select>
                             </div>
                         </div>
@@ -105,7 +119,7 @@ $feirante_id = $_SESSION['usuario_id'] ?? 1;
         </div>
     </div>
 
-    <footer class="mt-5 text-muted text-center"><p>&copy; 2026 XepaViva. Todos os direitos reservados.</p></footer>
+    <footer class="mt-5 text-muted text-center"><p>&copy; 2024 XepaViva. Todos os direitos reservados.</p></footer>
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="assets/js/high-contrast.js"></script>

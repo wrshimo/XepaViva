@@ -1,15 +1,13 @@
 <?php
 session_start();
 
-// Se o usuário não estiver logado ou não for um feirante, redireciona para o login
-if (!isset($_SESSION['usuario_id']) || !isset($_SESSION['usuario_tipo']) || $_SESSION['usuario_tipo'] !== 'feirante') {
-    // header("Location: login.php");
-    // exit();
+// Segurança: Redireciona para o login se o usuário não estiver logado ou não for um Feirante.
+if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_tipo'] !== 'Feirante') {
+    header("Location: login.php");
+    exit();
 }
 
-// ID do feirante logado (deve vir da sessão)
-$feirante_id = $_SESSION['usuario_id'] ?? 1; // Usando 1 como fallback para desenvolvimento
-$nome_feirante = $_SESSION['usuario_nome'] ?? 'Feirante';
+$nomeUsuario = $_SESSION['usuario_nome'] ?? 'Feirante';
 
 ?>
 <!DOCTYPE html>
@@ -20,106 +18,86 @@ $nome_feirante = $_SESSION['usuario_nome'] ?? 'Feirante';
     <title>Painel do Feirante | XepaViva</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
-    <link href="assets/css/style.css" rel="stylesheet">
-    <link href="assets/css/high-contrast.css" rel="stylesheet">
-    <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml">
+    <link href="./assets/css/style.css" rel="stylesheet">
+    <link rel="icon" href="./assets/images/favicon.svg" type="image/svg+xml">
 </head>
 <body>
-    <div id="toastContainer" class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1081"></div>
-    <header class="navbar navbar-dark bg-success sticky-top">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="feirante.php"><img src="assets/images/logo-white.svg" alt="Logo XepaViva" width="120"></a>
-            <div class="d-flex align-items-center">
-                <span class="navbar-text me-3">Olá, <?php echo htmlspecialchars($nome_feirante); ?></span>
-                <button id="highContrastToggle" class="btn btn-outline-light me-2"><i class="bi bi-sun"></i></button>
-                <a href="index.php" class="btn btn-outline-light">Sair</a>
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-success shadow-sm">
+        <div class="container">
+            <a class="navbar-brand" href="feirante.php">
+                <img src="./assets/images/logo-white.svg" alt="XepaViva" width="120">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="feirante.php"><i class="bi bi-house-door-fill me-1"></i>Início</a>
+                    </li>
+                    <!-- ITEM REMOVIDO -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="minhas-ofertas.php"><i class="bi bi-list-check me-1"></i>Minhas Ofertas</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="logout.php"><i class="bi bi-box-arrow-right me-1"></i>Sair</a>
+                    </li>
+                </ul>
             </div>
         </div>
-    </header>
-    <nav class="bg-light border-bottom">
-        <div class="container d-flex justify-content-center">
-            <ul class="nav nav-pills">
-                <li class="nav-item"><a href="feirante.php" class="nav-link active" aria-current="page">Painel</a></li>
-                <li class="nav-item"><a href="minhas-ofertas.php" class="nav-link">Minhas Ofertas</a></li>
-            </ul>
-        </div>
     </nav>
-    <main class="container mt-4">
+
+    <main class="container my-5">
         <div class="row">
             <div class="col-12">
-                <div class="bg-light p-5 rounded-3 mb-4">
-                    <h1 class="display-5 fw-bold">Seu Impacto</h1>
-                    <p class="fs-4">Veja os resultados do seu trabalho para reduzir o desperdício.</p>
-                    <div class="row text-center mt-4">
-                        <div class="col-md-4"><h2>R$ 1.250</h2><p>Receita total (simulado)</p></div>
-                        <div class="col-md-4"><h2>85 kg</h2><p>Alimentos salvos (simulado)</p></div>
-                        <div class="col-md-4"><h2>5</h2><p>Kits reservados hoje (simulado)</p></div>
+                <div class="p-5 mb-4 bg-light rounded-3">
+                    <div class="container-fluid py-5">
+                        <h1 class="display-5 fw-bold">Boas-vindas, <?php echo htmlspecialchars($nomeUsuario); ?>!</h1>
+                        <!-- MENSAGEM AJUSTADA -->
+                        <p class="col-md-8 fs-4">Este é o seu painel de controle. Acesse "Minhas Ofertas" para anunciar e gerenciar seus produtos.</p>
+                        <!-- BOTÃO REMOVIDO -->
                     </div>
                 </div>
             </div>
         </div>
-        <div class="row">
-            <div class="col-12">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h2 class="h3">Ofertas Recentes</h2>
-                    <button class="btn btn-primary" style="min-width: 44px; min-height: 44px;" data-bs-toggle="modal" data-bs-target="#ofertaModal" id="btnNovaOferta">
-                        <i class="bi bi-plus-circle me-2"></i>Anunciar Nova Xepa
-                    </button>
+
+        <div class="row text-center g-4">
+             <div class="col-md-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h2 class="card-title"><i class="bi bi-basket-fill text-success"></i></h2>
+                        <h3 class="display-6">15</h3>
+                        <p class="card-text">Ofertas Ativas</p>
+                    </div>
                 </div>
-                <div id="ofertasRecentesContainer">
-                    <!-- As ofertas recentes serão carregadas aqui pelo JavaScript -->
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h2 class="card-title"><i class="bi bi-check-circle-fill text-primary"></i></h2>
+                        <h3 class="display-6">8</h3>
+                        <p class="card-text">Reservas para Hoje</p>
+                    </div>
                 </div>
-                <div class="text-center mt-3">
-                    <a href="minhas-ofertas.php" class="btn btn-outline-secondary">Ver Todas as Ofertas</a>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h2 class="card-title"><i class="bi bi-people-fill text-info"></i></h2>
+                        <h3 class="display-6">120</h3>
+                        <p class="card-text">Clientes Atendidos</p>
+                    </div>
                 </div>
             </div>
         </div>
+
     </main>
 
-    <!-- Modal de Oferta -->
-    <div class="modal fade" id="ofertaModal" tabindex="-1" aria-labelledby="ofertaModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="ofertaModalLabel">Anunciar Nova Xepa</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="formOferta" novalidate>
-                        <input type="hidden" id="ofertaId">
-                        <input type="hidden" id="feirante_id" value="<?php echo htmlspecialchars($feirante_id); ?>">
-                        
-                        <div class="mb-3"><label for="produto" class="form-label">Nome do Produto <span class="text-danger">*</span></label><input type="text" class="form-control" id="produto" placeholder="Ex: Kit de Tomates Maduros" required></div>
-                        <div class="mb-3"><label for="descricao" class="form-label">Descrição</label><textarea class="form-control" id="descricao" rows="3" placeholder="Descreva os itens do kit, estado de maturação, sugestões de uso, etc."></textarea></div>
-                        <div class="row">
-                            <div class="col-md-6 mb-3"><label for="preco" class="form-label">Preço (R$) <span class="text-danger">*</span></label><input type="number" class="form-control" id="preco" placeholder="5.00" step="0.01" required></div>
-                            <div class="col-md-6 mb-3"><label for="quantidade_disponivel" class="form-label">Qtd. Disponível <span class="text-danger">*</span></label><input type="number" class="form-control" id="quantidade_disponivel" placeholder="10" required></div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6 mb-3"><label for="peso" class="form-label">Peso Aproximado (Kg)</label><input type="number" class="form-control" id="peso" placeholder="2.5" step="0.1"></div>
-                            <div class="col-md-6 mb-3">
-                                <label for="categoria" class="form-label">Categoria <span class="text-danger">*</span></label>
-                                <select class="form-select" id="categoria" required>
-                                    <option value="" selected disabled>Selecione uma categoria...</option>
-                                    <!-- Opções serão carregadas via JS -->
-                                </select>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" form="formOferta" class="btn btn-primary" id="btnSalvar">Salvar Oferta</button>
-                </div>
-            </div>
-        </div>
-    </div>
+    <footer class="text-center py-4 bg-light mt-5">
+        <p>&copy; 2024 XepaViva. Todos os direitos reservados.</p>
+    </footer>
 
-    <footer class="mt-5 text-muted text-center"><p>&copy; 2026 XepaViva. Todos os direitos reservados.</p></footer>
-    
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="assets/js/high-contrast.js"></script>
-    <script src="assets/js/toast.js"></script>
-    <script src="assets/js/dashboard-feirante.js"></script>
 </body>
 </html>

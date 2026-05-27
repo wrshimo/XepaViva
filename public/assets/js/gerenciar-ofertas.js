@@ -17,10 +17,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const init = () => {
         currentUser = JSON.parse(localStorage.getItem('xepa-user'));
-        if (!currentUser || currentUser.tipo !== 'feirante') {
+        
+        // CORREÇÃO: A verificação agora usa 'Feirante' (maiúsculo) para corresponder
+        // aos dados salvos no localStorage pelo auth.js.
+        if (!currentUser || currentUser.tipo !== 'Feirante') {
             setPlaceholderState('erro', 'Usuário inválido ou não autenticado.');
             return;
         }
+
         if (feiranteIdInput) {
             feiranteIdInput.value = currentUser.id;
         }
@@ -33,12 +37,21 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!currentUser) return;
         setPlaceholderState('loading');
         try {
-            // CORREÇÃO DEFINITIVA (CACHE-BUSTING): Adiciona um parâmetro único à URL para forçar o navegador
-            // a buscar dados novos do servidor, ignorando completamente qualquer cache.
             const cacheBuster = `_=${new Date().getTime()}`;
             const url = `${API_URL_OFERTAS}?feirante_id=${currentUser.id}&${cacheBuster}`;
             
             const response = await fetch(url);
+            
+            // Tratamento de erro HTTP
+            if (!response.ok) {
+                let errorMsg = `Erro HTTP: ${response.status}`;
+                try {
+                    const errorResult = await response.json();
+                    errorMsg = errorResult.message || errorMsg;
+                } catch (e) { /* Ignora se o corpo não for JSON */ }
+                throw new Error(errorMsg);
+            }
+
             const result = await response.json();
 
             if (result.status === 'success' && Array.isArray(result.data)) {
@@ -48,11 +61,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     setPlaceholderState('vazio');
                 }
             } else {
-                setPlaceholderState('vazio');
+                setPlaceholderState('erro', result.message || 'Nenhuma oferta encontrada.');
             }
         } catch (error) {
             console.error('Erro ao carregar ofertas:', error);
-            setPlaceholderState('erro', 'Falha ao carregar ofertas.');
+            setPlaceholderState('erro', error.message || 'Falha ao carregar ofertas.');
         }
     };
 
@@ -109,7 +122,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 ofertasPlaceholder.innerHTML = '<p>Nenhuma oferta encontrada. Clique em "Anunciar Nova Xepa" para começar.</p>';
                 break;
             case 'erro':
-                ofertasPlaceholder.innerHTML = `<p class="text-danger">${message}</p>`;
+                ofertasPlaceholder.innerHTML = `<p class="text-danger fw-bold">${message}</p>`;
                 break;
         }
     };
@@ -137,13 +150,13 @@ document.addEventListener('DOMContentLoaded', () => {
             const result = await response.json();
             if (result.status === 'success') {
                 showToast('Status da oferta atualizado com sucesso.', 'success');
-                carregarOfertas();
+                // Não precisa recarregar a tabela inteira, apenas confirma a mudança.
             } else {
                 throw new Error(result.message);
             }
         } catch(error) {
             showToast(error.message || 'Falha ao atualizar o status da oferta.', 'error');
-            carregarOfertas(); 
+            carregarOfertas(); // Recarrega para reverter a mudança visual do switch
         }
     };
 

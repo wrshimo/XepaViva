@@ -1,87 +1,44 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Buscar Ofertas | XepaViva</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
-    <link href="assets/css/style.css" rel="stylesheet">
-    <link href="assets/css/high-contrast.css" rel="stylesheet">
-    <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml">
-</head>
-<body>
+<?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
-    <!-- Header e Menu Dinâmico -->
-    <header id="main-header">
-        <!-- O conteúdo do header (logo, botões) será injetado aqui pelo auth.js -->
-    </header>
+if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_tipo'] !== 'Consumidor') {
+    header("Location: login.php");
+    exit();
+}
 
-    <main class="container mt-4">
-        <h1 class="h2 mb-4">Encontre Xepas Fresquinhas</h1>
+$pageTitle = "Buscar Ofertas";
+require_once 'layout/header_consumidor.php';
+?>
 
-        <!-- Filtros -->
-        <div class="row mb-4">
-            <div class="col-md-6">
-                <input type="search" id="filtroBusca" class="form-control" placeholder="Busque por produto ou feirante...">
+<main class="container mt-4">
+    <h1 class="mb-4">Encontre uma Xepa perto de você</h1>
+
+    <section class="mb-4 p-3 bg-light rounded shadow-sm">
+        <div class="row g-3 align-items-end">
+            <div class="col-md-7">
+                <label for="filtroTexto" class="form-label">Buscar por nome do produto</label>
+                <input type="text" class="form-control" id="filtroTexto" placeholder="Ex: Tomate, Alface, Kit de Legumes...">
             </div>
-            <div class="col-md-4">
-                <!-- O dropdown de categorias será populado dinamicamente -->
-                <select id="filtroCategoria" class="form-select">
-                    <option value="" selected>Todas as categorias</option>
+            <div class="col-md-5">
+                <label for="filtroCategoria" class="form-label">Filtrar por categoria</label>
+                <select class="form-select" id="filtroCategoria">
+                    <option value="todas" selected>Carregando categorias...</option>
                 </select>
             </div>
-            <div class="col-md-2">
-                <button id="btnLimparFiltros" class="btn btn-outline-secondary w-100">Limpar</button>
-            </div>
         </div>
+    </section>
 
-        <!-- Resultados -->
-        <div id="ofertas-container" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-            <!-- Indicador de Carregamento -->
-            <div id="loading-indicator" class="text-center w-100">
-                <div class="spinner-border text-success" role="status">
-                    <span class="visually-hidden">Carregando...</span>
-                </div>
-                <p>Buscando ofertas...</p>
-            </div>
-            <!-- O conteúdo dinâmico (cards de ofertas) será inserido aqui -->
-        </div>
-
-    </main>
-
-    <!-- MODAL DE CONFIRMAÇÃO DE RESERVA -->
-    <div class="modal fade" id="reservaModal" tabindex="-1" aria-labelledby="reservaModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="reservaModalLabel">Confirmar Reserva</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p>Você está reservando: <strong id="modal-oferta-nome"></strong></p>
-                    <div class="mb-3">
-                        <label for="modal-quantidade" class="form-label">Quantidade de kits:</label>
-                        <input type="number" class="form-control" id="modal-quantidade" value="1" min="1">
-                    </div>
-                    <div id="modal-feedback"></div> <!-- Para mensagens de erro ou sucesso -->
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-success" id="btn-confirmar-reserva">Confirmar Reserva</button>
-                </div>
-            </div>
-        </div>
+    <div id="ofertas-container" class="row gy-4">
+        <!-- As ofertas serão carregadas aqui via JavaScript -->
     </div>
-    <!-- FIM DO MODAL -->
+    
+    <div id="ofertas-placeholder" class="text-center py-5">
+        <!-- Placeholder para feedback de carregamento, erro ou vazio -->
+    </div>
+</main>
 
-    <footer class="mt-5 text-muted text-center">
-        <p>&copy; 2026 XepaViva. Todos os direitos reservados.</p>
-    </footer>
+<?php require_once 'layout/footer.php'; ?>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="assets/js/high-contrast.js"></script>
-    <script src="assets/js/auth.js"></script>
-    <script src="assets/js/buscar-ofertas.js"></script>
-</body>
-</html>
+<script src="assets/js/buscar-ofertas.js"></script>

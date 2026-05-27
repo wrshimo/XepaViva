@@ -1,57 +1,68 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', function () {
     const form = document.getElementById('registro-form');
-    const feedback = document.getElementById('feedback-message');
-    const senha = document.getElementById('senha');
-    const confirmarSenha = document.getElementById('confirmar_senha');
+    const feedbackMessage = document.getElementById('feedback-message');
 
-    form.addEventListener('submit', async (e) => {
-        e.preventDefault();
+    form.addEventListener('submit', async function (event) {
+        // Impede o envio tradicional do formulário
+        event.preventDefault();
 
-        // Limpa mensagens anteriores
-        feedback.innerHTML = '';
-        feedback.className = '';
+        const nome = document.getElementById('nome').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const telefone = document.getElementById('telefone').value.trim();
+        const senha = document.getElementById('senha').value;
+        const confirmarSenha = document.getElementById('confirmar_senha').value;
 
-        // Validação de senha
-        if (senha.value !== confirmarSenha.value) {
+        // Limpa mensagens de feedback anteriores
+        feedbackMessage.innerHTML = '';
+        feedbackMessage.className = '';
+
+        // Validação no lado do cliente
+        if (!nome || !email || !telefone || !senha || !confirmarSenha) {
+            displayMessage('Por favor, preencha todos os campos.', 'danger');
+            return;
+        }
+
+        if (senha !== confirmarSenha) {
             displayMessage('As senhas não coincidem.', 'danger');
             return;
         }
 
-        const formData = new FormData(form);
-        const data = Object.fromEntries(formData.entries());
-
-        // Adiciona o tipo de usuário manualmente para o cadastro de consumidor
-        data.tipo = 'Consumidor'; 
+        // Prepara os dados para enviar à API
+        const dadosUsuario = {
+            nome: nome,
+            email: email,
+            telefone: telefone,
+            senha: senha,
+            tipo: 'Consumidor' // Define o tipo de usuário explicitamente
+        };
 
         try {
-            const response = await fetch(form.action, {
+            const response = await fetch('api/routes/usuarios.php', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(data)
+                body: JSON.stringify(dadosUsuario),
             });
 
             const result = await response.json();
 
-            if (result.status === 'success') {
-                displayMessage(result.message, 'success');
-                form.reset();
-                // Redireciona para o login após 2 segundos
-                setTimeout(() => {
-                    window.location.href = 'login.php';
-                }, 2000);
+            if (response.ok && result.status === 'success') {
+                displayMessage(result.message + ' Você já pode fazer login.', 'success');
+                form.reset(); // Limpa o formulário após o sucesso
             } else {
+                // Exibe a mensagem de erro vinda da API
                 displayMessage(result.message || 'Ocorreu um erro no cadastro.', 'danger');
             }
         } catch (error) {
+            // Trata erros de rede ou de JSON inválido
             console.error('Erro ao enviar o formulário:', error);
             displayMessage('Não foi possível conectar ao servidor. Tente novamente mais tarde.', 'danger');
         }
     });
 
     function displayMessage(message, type) {
-        feedback.className = `alert alert-${type}`;
-        feedback.textContent = message;
+        feedbackMessage.className = `alert alert-${type} mt-3`;
+        feedbackMessage.textContent = message;
     }
 });

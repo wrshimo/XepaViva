@@ -22,38 +22,23 @@ $feirante_id = $_SESSION['usuario_id'];
     <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml">
 </head>
 <body>
-    <!-- Contêiner de Toasts para notificações -->
-    <div id="toastContainer" class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1081"></div>
+    <div id="toastContainer" class="toast-container position-fixed bottom-0 end-0 p-3"></div>
 
-    <!-- CABEÇALHO UNIFICADO (copiado de feirante.php) -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-success shadow-sm">
         <div class="container">
-            <a class="navbar-brand" href="feirante.php">
-                <img src="./assets/images/logo-white.svg" alt="XepaViva" width="120">
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+            <a class="navbar-brand" href="feirante.php"><img src="./assets/images/logo-white.svg" alt="XepaViva" width="120"></a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"><span class="navbar-toggler-icon"></span></button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto align-items-center">
-                    <li class="nav-item">
-                        <a class="nav-link" href="feirante.php"><i class="bi bi-house-door-fill me-1"></i>Início</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="minhas-ofertas.php" aria-current="page"><i class="bi bi-list-check me-1"></i>Minhas Ofertas</a>
-                    </li>
-                    <li class="nav-item me-lg-2">
-                        <a class="nav-link" href="logout.php"><i class="bi bi-box-arrow-right me-1"></i>Sair</a>
-                    </li>
-                    <li class="nav-item mt-2 mt-lg-0">
-                        <button id="highContrastToggle" class="btn btn-outline-light"><i class="bi bi-sun"></i></button>
-                    </li>
+                    <li class="nav-item"><a class="nav-link" href="feirante.php"><i class="bi bi-house-door-fill me-1"></i>Início</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="minhas-ofertas.php" aria-current="page"><i class="bi bi-list-check me-1"></i>Minhas Ofertas</a></li>
+                    <li class="nav-item"><a class="nav-link" href="gerenciar-reservas.php"><i class="bi bi-calendar-check-fill me-1"></i>Gerenciar Reservas</a></li>
+                    <li class="nav-item me-lg-2"><a class="nav-link" href="logout.php"><i class="bi bi-box-arrow-right me-1"></i>Sair</a></li>
+                    <li class="nav-item mt-2 mt-lg-0"><button id="highContrastToggle" class="btn btn-outline-light"><i class="bi bi-sun"></i></button></li>
                 </ul>
             </div>
         </div>
     </nav>
-
-    <!-- O header e a nav secundária foram removidos -->
 
     <main class="container mt-4">
         <div class="d-flex justify-content-between align-items-center mb-4">
@@ -75,13 +60,10 @@ $feirante_id = $_SESSION['usuario_id'];
                 </thead>
                 <tbody id="tabelaOfertas"></tbody>
             </table>
-             <div id="ofertas-placeholder" class="text-center py-5">
-                 <!-- Estado inicial é definido pelo JS -->
-            </div>
+             <div id="ofertas-placeholder" class="text-center py-5"></div>
         </div>
     </main>
 
-    <!-- Modal de Oferta -->
     <div class="modal fade" id="ofertaModal" tabindex="-1" aria-labelledby="ofertaModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -93,7 +75,6 @@ $feirante_id = $_SESSION['usuario_id'];
                     <form id="formOferta" novalidate>
                         <input type="hidden" id="ofertaId">
                         <input type="hidden" id="feirante_id" value="<?php echo htmlspecialchars($feirante_id); ?>">
-                        
                         <div class="mb-3"><label for="produto" class="form-label">Nome do Produto <span class="text-danger">*</span></label><input type="text" class="form-control" id="produto" placeholder="Ex: Kit de Tomates" required></div>
                         <div class="mb-3"><label for="descricao" class="form-label">Descrição</label><textarea class="form-control" id="descricao" rows="3" placeholder="Descreva os itens, estado de maturação, etc."></textarea></div>
                         <div class="row">
@@ -102,12 +83,7 @@ $feirante_id = $_SESSION['usuario_id'];
                         </div>
                         <div class="row">
                             <div class="col-md-6 mb-3"><label for="peso" class="form-label">Peso Aproximado (Kg)</label><input type="number" class="form-control" id="peso" placeholder="2.5" step="0.1"></div>
-                            <div class="col-md-6 mb-3">
-                                <label for="categoria" class="form-label">Categoria <span class="text-danger">*</span></label>
-                                <select class="form-select" id="categoria" required>
-                                    <option value="" selected disabled>Selecione...</option>
-                                </select>
-                            </div>
+                            <div class="col-md-6 mb-3"><label for="categoria" class="form-label">Categoria <span class="text-danger">*</span></label><select class="form-select" id="categoria" required><option value="" selected disabled>Selecione...</option></select></div>
                         </div>
                     </form>
                 </div>

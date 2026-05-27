@@ -1,65 +1,128 @@
 <?php
 // /public/api/routes/reservas.php
 
-// Headers para permitir requisições de qualquer origem (CORS) e definir o tipo de conteúdo.
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8");
-header("Access-Control-Allow-Methods: POST, GET"); // Futuramente podemos adicionar GET para listar reservas
+header("Access-Control-Allow-Methods: POST, GET, PUT");
 header("Access-Control-Max-Age: 3600");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 
 require_once __DIR__ . '/../models/Reserva.php';
-require_once __DIR__ . '/../helpers/response.php'; // Helper para padronizar as respostas
 
 $method = $_SERVER['REQUEST_METHOD'];
 
-if ($method == 'POST') {
-    // Lógica para criar uma nova reserva
-    try {
-        // 1. OBTER DADOS DA REQUISIÇÃO
+
+$reserva = new Reserva();
+
+switch ($method) {
+    case 'POST':
         $data = json_decode(file_get_contents("php://input"));
+        try {
+            if (empty($data->consumidor_id) || empty($data->oferta_id) || empty($data->quantidade_reservada)) {
+                http_response_code(400);
+                echo json_encode(["status" => "error", "message" => "Dados incompletos."]);
+                return;
+            }
 
-        // 2. VALIDAR DADOS
-        // Verifica se os campos essenciais foram enviados na requisição.
-        if (
-            empty($data->consumidor_id) ||
-            empty($data->oferta_id) ||
-            empty($data->quantidade_reservada)
-        ) {
-            send_response(400, ["status" => "error", "message" => "Dados incompletos. Campos obrigatórios: consumidor_id, oferta_id, quantidade_reservada."]);
-            return;
+            $reserva->consumidor_id = $data->consumidor_id;
+            $reserva->oferta_id = $data->oferta_id;
+            $reserva->quantidade_reservada = $data->quantidade_reservada;
+
+            if ($reserva->criar()) {
+                http_response_code(201);
+                echo json_encode([
+                    "status" => "success", 
+                    "message" => "Reserva criada com sucesso.",
+                    "data" => [
+                        "reserva_id" => $reserva->id,
+                        "codigo_retirada" => $reserva->codigo_retirada
+                    ]
+                ]);
+            } else {
+                http_response_code(503);
+                echo json_encode(["status" => "error", "message" => "Não foi possível criar a reserva. Estoque indisponível ou erro interno."]);
+            }
+        } catch (Exception $e) {
+            http_response_code(500);
+            echo json_encode(["status" => "error", "message" => "Erro interno no servidor.", "error_details" => $e->getMessage()]);
         }
+        break;
 
-        // 3. INSTANCIAR E PREENCHER O MODELO
-        $reserva = new Reserva();
-        $reserva->consumidor_id = $data->consumidor_id;
-        $reserva->oferta_id = $data->oferta_id;
-        $reserva->quantidade_reservada = $data->quantidade_reservada;
+    case 'GET':
+        try {
+            if (empty($_GET['feirante_id'])) {
+                http_response_code(400);
+                echo json_encode(["status" => "error", "message" => "ID do feirante é obrigatório."]);
+                return;
+            }
 
-        // 4. TENTAR CRIAR A RESERVA
-        // O método criar() no modelo Reserva contém toda a lógica de transação e verificação de estoque.
-        if ($reserva->criar()) {
-            // Se a criação for bem-sucedida, retorna o status 201 (Created)
-            send_response(201, [
-                "status" => "success", 
-                "message" => "Reserva criada com sucesso.",
-                "data" => [
-                    "reserva_id" => $reserva->id,
-                    "codigo_retirada" => $reserva->codigo_retirada
-                ]
-            ]);
-        } else {
-            // Se criar() retorna false, pode ser por estoque insuficiente ou outro erro de banco de dados.
-            send_response(503, ["status" => "error", "message" => "Não foi possível criar a reserva. Verifique o estoque da oferta ou tente novamente mais tarde."]);
+            $feirante_id = htmlspecialchars(strip_tags($_GET['feirante_id']));
+            
+            // Pega os status do filtro, se existirem
+            $status_filter = [];
+            if(isset($_GET['status']) && is_array($_GET['status'])) {
+                $status_filter = $_GET['status'];
+            }
+
+            $stmt = $reserva->listarPorFeirante($feirante_id, $status_filter);
+            $num = $stmt->rowCount();
+
+            if ($num > 0) {
+                $reservas_arr = [];
+                while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                    extract($row);
+                    $reserva_item = [
+                        "id" => $id,
+                        "cliente_nome" => $cliente_nome,
+                        "oferta_nome" => $oferta_nome,
+                        "quantidade_reservada" => $quantidade_reservada,
+                        "codigo_retirada" => $codigo_retirada,
+                        "status" => $status,
+                        "data_reserva" => $data_reserva
+                    ];
+                    array_push($reservas_arr, $reserva_item);
+                }
+                http_response_code(200);
+                echo json_encode(["status" => "success", "data" => $reservas_arr]);
+            } else {
+                http_response_code(200);
+                echo json_encode(["status" => "success", "data" => [], "message" => "Nenhuma reserva encontrada."]);
+            }
+        } catch (Exception $e) {
+            http_response_code(500);
+            echo json_encode(["status" => "error", "message" => "Erro interno no servidor: " . $e->getMessage()]);
         }
+        break;
 
-    } catch (Exception $e) {
-        // Captura qualquer erro inesperado durante o processo.
-        send_response(500, ["status" => "error", "message" => "Erro interno no servidor.", "error_details" => $e->getMessage()]);
-    }
-} else {
-    // Se o método não for POST, retorna um erro 405 (Method Not Allowed).
-    header('Allow: POST');
-    send_response(405, ["status" => "error", "message" => "Método não permitido."]);
+    case 'PUT':
+        $data = json_decode(file_get_contents("php://input"));
+        try {
+            if (empty($data->reserva_id) || empty($data->status)) {
+                http_response_code(400);
+                echo json_encode(["status" => "error", "message" => "ID da reserva e novo status são obrigatórios."]);
+                return;
+            }
+
+            $reserva->id = $data->reserva_id;
+            $reserva->status = $data->status;
+
+            if ($reserva->atualizarStatus()) {
+                http_response_code(200);
+                echo json_encode(["status" => "success", "message" => "Status da reserva atualizado com sucesso."]);
+            } else {
+                http_response_code(503);
+                echo json_encode(["status" => "error", "message" => "Não foi possível atualizar o status da reserva."]);
+            }
+        } catch (Exception $e) {
+            http_response_code(500);
+            echo json_encode(["status" => "error", "message" => "Erro interno no servidor."]);
+        }
+        break;
+
+    default:
+        header('Allow: GET, POST, PUT');
+        http_response_code(405);
+        echo json_encode(["status" => "error", "message" => "Método não permitido."]);
+        break;
 }
 ?>

@@ -7,6 +7,7 @@ class Oferta {
     private $conn;
     private $table_name = "ofertas";
 
+    // Propriedades
     public $id;
     public $feirante_id;
     public $nome;
@@ -26,7 +27,6 @@ class Oferta {
         $this->conn = Database::getInstance()->getConnection();
     }
 
-    // Função para carregar os dados de uma oferta específica
     public function carregarPeloId($id) {
         $query = "SELECT * FROM " . $this->table_name . " WHERE id = :id LIMIT 1";
         $stmt = $this->conn->prepare($query);
@@ -35,7 +35,6 @@ class Oferta {
         
         if ($stmt->rowCount() > 0) {
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
-            // Atribui os valores da linha às propriedades do objeto
             foreach ($row as $key => $value) {
                 if (property_exists($this, $key)) {
                     $this->$key = $value;
@@ -52,8 +51,10 @@ class Oferta {
                        u.nome as nome_feirante
                   FROM " . $this->table_name . " o
                   LEFT JOIN usuarios u ON o.feirante_id = u.id";
+        
         $where_clauses = [];
         $params = [];
+
         if (!empty($filtros['q'])) {
             $where_clauses[] = "(o.nome LIKE :q OR o.descricao LIKE :q OR u.nome LIKE :q)";
             $params[':q'] = '%' . $filtros['q'] . '%';
@@ -66,14 +67,11 @@ class Oferta {
             $where_clauses[] = "o.disponivel = :disponivel";
             $params[':disponivel'] = filter_var($filtros['disponivel'], FILTER_VALIDATE_BOOLEAN) ? 1 : 0;
         }
-        if (!empty($filtros['id'])) {
-            $where_clauses[] = "o.id = :id";
-            $params[':id'] = $filtros['id'];
-        }
         if (!empty($filtros['feirante_id'])) {
             $where_clauses[] = "o.feirante_id = :feirante_id";
             $params[':feirante_id'] = $filtros['feirante_id'];
         }
+
         if (!empty($where_clauses)) {
             $query .= " WHERE " . implode(" AND ", $where_clauses);
         }
@@ -84,23 +82,26 @@ class Oferta {
     }
 
     public function criar() {
-        $query = "INSERT INTO " . $this->table_name . " SET feirante_id=:feirante_id, nome=:nome, descricao=:descricao, preco=:preco, quantidade_inicial=:quantidade_inicial, quantidade_disponivel=:quantidade_disponivel, categoria=:categoria, disponivel=1";
+        $query = "INSERT INTO " . $this->table_name . " SET feirante_id=:feirante_id, nome=:nome, descricao=:descricao, preco=:preco, peso=:peso, quantidade_inicial=:quantidade_inicial, quantidade_disponivel=:quantidade_disponivel, categoria=:categoria, disponivel=1";
         $stmt = $this->conn->prepare($query);
 
+        // Sanitização e Validação
         $this->feirante_id = intval($this->feirante_id);
         $this->nome = htmlspecialchars(strip_tags($this->nome));
         $this->descricao = htmlspecialchars(strip_tags($this->descricao ?? ''));
         $this->preco = floatval($this->preco);
+        $this->peso = floatval($this->peso);
         $this->quantidade_inicial = intval($this->quantidade_inicial);
-        $this->quantidade_disponivel = intval($this->quantidade_disponivel);
+        $this->quantidade_disponivel = intval($this->quantidade_inicial); // Regra de negócio
         $this->categoria = htmlspecialchars(strip_tags($this->categoria ?? ''));
 
-        $stmt->bindParam(":feirante_id", $this->feirante_id);
+        $stmt->bindParam(":feirante_id", $this->feirante_id, PDO::PARAM_INT);
         $stmt->bindParam(":nome", $this->nome);
         $stmt->bindParam(":descricao", $this->descricao);
         $stmt->bindParam(":preco", $this->preco);
-        $stmt->bindParam(":quantidade_inicial", $this->quantidade_inicial);
-        $stmt->bindParam(":quantidade_disponivel", $this->quantidade_disponivel);
+        $stmt->bindParam(":peso", $this->peso);
+        $stmt->bindParam(":quantidade_inicial", $this->quantidade_inicial, PDO::PARAM_INT);
+        $stmt->bindParam(":quantidade_disponivel", $this->quantidade_disponivel, PDO::PARAM_INT);
         $stmt->bindParam(":categoria", $this->categoria);
 
         if($stmt->execute()){
@@ -110,46 +111,30 @@ class Oferta {
         return false;
     }
 
-    // FUNÇÃO ATUALIZAR() COMPLETAMENTE REESCRITA PARA SER ROBUSTA E EXPLÍCITA
     public function atualizar() {
-        $query = "UPDATE " . $this->table_name . " SET
-                    nome = :nome,
-                    descricao = :descricao,
-                    preco = :preco,
-                    quantidade_disponivel = :quantidade_disponivel,
-                    disponivel = :disponivel,
-                    categoria = :categoria
-                  WHERE
-                    id = :id";
-
+        $query = "UPDATE " . $this->table_name . " SET nome=:nome, descricao=:descricao, preco=:preco, peso=:peso, quantidade_disponivel=:quantidade_disponivel, disponivel=:disponivel, categoria=:categoria WHERE id=:id";
         $stmt = $this->conn->prepare($query);
 
-        // Sanitização e formatação dos dados
+        // Sanitização e Validação
         $this->id = intval($this->id);
         $this->nome = htmlspecialchars(strip_tags($this->nome));
-        $this->descricao = htmlspecialchars(strip_tags($this->descricao));
+        $this->descricao = htmlspecialchars(strip_tags($this->descricao ?? ''));
         $this->preco = floatval($this->preco);
+        $this->peso = floatval($this->peso);
         $this->quantidade_disponivel = intval($this->quantidade_disponivel);
         $this->disponivel = filter_var($this->disponivel, FILTER_VALIDATE_BOOLEAN) ? 1 : 0;
-        $this->categoria = htmlspecialchars(strip_tags($this->categoria));
+        $this->categoria = htmlspecialchars(strip_tags($this->categoria ?? ''));
         
-        // Binding explícito para cada parâmetro
-        $stmt->bindParam(':id', $this->id, PDO::PARAM_INT);
-        $stmt->bindParam(':nome', $this->nome);
-        $stmt->bindParam(':descricao', $this->descricao);
-        $stmt->bindParam(':preco', $this->preco);
-        $stmt->bindParam(':quantidade_disponivel', $this->quantidade_disponivel, PDO::PARAM_INT);
-        $stmt->bindParam(':disponivel', $this->disponivel, PDO::PARAM_INT);
-        $stmt->bindParam(':categoria', $this->categoria);
+        $stmt->bindParam(":id", $this->id, PDO::PARAM_INT);
+        $stmt->bindParam(":nome", $this->nome);
+        $stmt->bindParam(":descricao", $this->descricao);
+        $stmt->bindParam(":preco", $this->preco);
+        $stmt->bindParam(":peso", $this->peso);
+        $stmt->bindParam(":quantidade_disponivel", $this->quantidade_disponivel, PDO::PARAM_INT);
+        $stmt->bindParam(":disponivel", $this->disponivel, PDO::PARAM_INT);
+        $stmt->bindParam(":categoria", $this->categoria);
 
-        // A execução agora é segura e previsível
-        if ($stmt->execute()) {
-            return true;
-        }
-        
-        // Em caso de erro, logar pode ser uma boa ideia
-        // error_log($stmt->errorInfo()[2]);
-        return false;
+        return $stmt->execute();
     }
 
     public function deletar() {
@@ -157,7 +142,7 @@ class Oferta {
         $stmt = $this->conn->prepare($query);
         
         $this->id = intval($this->id);
-        $stmt->bindParam(":id", $this->id);
+        $stmt->bindParam(":id", $this->id, PDO::PARAM_INT);
 
         if ($stmt->execute()) {
             return $stmt->rowCount() > 0;

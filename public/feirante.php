@@ -36,9 +36,11 @@ $nomeUsuario = $_SESSION['usuario_nome'] ?? 'Feirante';
                     <li class="nav-item">
                         <a class="nav-link active" href="feirante.php"><i class="bi bi-house-door-fill me-1"></i>Início</a>
                     </li>
-                    <!-- ITEM REMOVIDO -->
                     <li class="nav-item">
                         <a class="nav-link" href="minhas-ofertas.php"><i class="bi bi-list-check me-1"></i>Minhas Ofertas</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="gerenciar-reservas.php"><i class="bi bi-calendar-check-fill me-1"></i>Gerenciar Reservas</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="logout.php"><i class="bi bi-box-arrow-right me-1"></i>Sair</a>
@@ -54,9 +56,7 @@ $nomeUsuario = $_SESSION['usuario_nome'] ?? 'Feirante';
                 <div class="p-5 mb-4 bg-light rounded-3">
                     <div class="container-fluid py-5">
                         <h1 class="display-5 fw-bold">Boas-vindas, <?php echo htmlspecialchars($nomeUsuario); ?>!</h1>
-                        <!-- MENSAGEM AJUSTADA -->
-                        <p class="col-md-8 fs-4">Este é o seu painel de controle. Acesse "Minhas Ofertas" para anunciar e gerenciar seus produtos.</p>
-                        <!-- BOTÃO REMOVIDO -->
+                        <p class="col-md-8 fs-4">Este é o seu painel de controle. Use o menu acima para gerenciar suas ofertas e reservas.</p>
                     </div>
                 </div>
             </div>

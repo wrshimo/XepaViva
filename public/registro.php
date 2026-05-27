@@ -23,11 +23,11 @@
                     <div class="card-body p-4">
                         <h1 class="card-title text-center h3 mb-4">Crie sua conta de Consumidor</h1>
                         
-                        <!-- Mensagens de sucesso ou erro -->
+                        <!-- Mensagens de sucesso ou erro serão inseridas aqui pelo JS -->
                         <div id="feedback-message"></div>
 
-                        <!-- Formulário de Registro de Consumidor -->
-                        <form id="registro-form" action="api/routes/usuarios.php" method="POST">
+                        <!-- FORMULÁRIO REFATORADO: action e method removidos -->
+                        <form id="registro-form" novalidate>
                             <div class="mb-3">
                                 <label for="nome" class="form-label">Nome Completo</label>
                                 <input type="text" class="form-control" id="nome" name="nome" required>
@@ -67,8 +67,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Incluiremos um script para validação e submissão via JS -->
+    <!-- Script de lógica do formulário que será criado -->
     <script src="assets/js/registro-consumidor.js"></script>
-    <script src="assets/js/app.js"></script>
 </body>
 </html>

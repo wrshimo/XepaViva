@@ -115,7 +115,6 @@ class Reserva {
         $stmt = $this->conn->prepare($query);
         
         foreach ($params as $key => $val) {
-            // O tipo do feirante_id é INT, os outros são STR
             $param_type = ($key === ':feirante_id') ? PDO::PARAM_INT : PDO::PARAM_STR;
             $stmt->bindValue($key, $val, $param_type);
         }
@@ -125,9 +124,34 @@ class Reserva {
     }
 
     /**
-     * Atualiza o status de uma reserva e, se concluída, a data de retirada efetiva.
-     * @return bool True se a atualização foi bem-sucedida, false caso contrário.
+     * NOVO MÉTODO: Lista todas as reservas de um consumidor específico.
      */
+    public function listarPorConsumidor($consumidor_id) {
+        $query = "SELECT 
+                        r.id,
+                        r.codigo_retirada,
+                        r.quantidade_reservada,
+                        r.status,
+                        DATE_FORMAT(r.data_reserva, '%d/%m/%Y às %H:%i') as data_reserva_formatada,
+                        o.nome as oferta_nome,
+                        o.foto,
+                        u.nome as feirante_nome,
+                        (r.preco * r.quantidade_reservada) as valor_total
+                    FROM 
+                        " . $this->table_name . " r
+                        JOIN ofertas o ON r.oferta_id = o.id
+                        JOIN usuarios u ON o.feirante_id = u.id
+                    WHERE 
+                        r.consumidor_id = :consumidor_id
+                    ORDER BY 
+                        r.data_reserva DESC";
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':consumidor_id', $consumidor_id, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt;
+    }
+
     public function atualizarStatus() {
         $allowed_status = ['Confirmada', 'Aguardando Retirada', 'Concluida', 'Cancelada pelo Consumidor', 'Cancelada pelo Feirante', 'Nao Compareceu'];
         if (!in_array($this->status, $allowed_status)) {

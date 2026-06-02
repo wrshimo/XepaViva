@@ -10,13 +10,15 @@ header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers
 require_once __DIR__ . '/../models/Reserva.php';
 
 $method = $_SERVER['REQUEST_METHOD'];
-$reserva = new Reserva();
+
+// A linha '$reserva = new Reserva();' foi REMOVIDA deste escopo global.
 
 switch ($method) {
     case 'POST':
-        // Lógica de criação de reserva (inalterada)
-        $data = json_decode(file_get_contents("php://input"));
         try {
+            $reserva = new Reserva(); // Instanciação DENTRO do try
+            $data = json_decode(file_get_contents("php://input"));
+
             if (empty($data->consumidor_id) || empty($data->oferta_id) || empty($data->quantidade_reservada)) {
                 http_response_code(400);
                 echo json_encode(["status" => "error", "message" => "Dados incompletos."]);
@@ -32,25 +34,26 @@ switch ($method) {
                 http_response_code(503);
                 echo json_encode(["status" => "error", "message" => "Não foi possível criar a reserva. Estoque indisponível ou erro interno."]);
             }
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             http_response_code(500);
-            echo json_encode(["status" => "error", "message" => "Erro interno no servidor.", "error_details" => $e->getMessage()]);
+            echo json_encode(["status" => "error", "message" => "Erro fatal ao criar reserva.", "details" => $e->getMessage()]);
         }
         break;
 
     case 'GET':
         try {
-            // Roteamento: Verifica se a requisição é para um consumidor ou feirante.
+            $reserva = new Reserva(); // Instanciação DENTRO do try
+
             if (isset($_GET['consumidor_id'])) {
-                // Lógica para listar reservas de um consumidor
                 $consumidor_id = htmlspecialchars(strip_tags($_GET['consumidor_id']));
-                $stmt = $reserva->listarPorConsumidor($consumidor_id);
+                $status_filter = (isset($_GET['status']) && is_array($_GET['status'])) ? $_GET['status'] : [];
+
+                $stmt = $reserva->listarPorConsumidor($consumidor_id, $status_filter);
                 $num = $stmt->rowCount();
 
                 if ($num > 0) {
                     $reservas_arr = [];
                     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                        // Formata o valor total para duas casas decimais.
                         $row['valor_total'] = number_format((float)$row['valor_total'], 2, '.', '');
                         array_push($reservas_arr, $row);
                     }
@@ -58,11 +61,10 @@ switch ($method) {
                     echo json_encode(["status" => "success", "data" => $reservas_arr]);
                 } else {
                     http_response_code(200);
-                    echo json_encode(["status" => "success", "data" => [], "message" => "Nenhuma reserva encontrada."]);
+                    echo json_encode(["status" => "success", "data" => [], "message" => "Nenhuma reserva encontrada para os filtros selecionados."]);
                 }
 
             } elseif (isset($_GET['feirante_id'])) {
-                // Lógica original para listar reservas de um feirante (inalterada)
                 $feirante_id = htmlspecialchars(strip_tags($_GET['feirante_id']));
                 $status_filter = (isset($_GET['status']) && is_array($_GET['status'])) ? $_GET['status'] : [];
                 $stmt = $reserva->listarPorFeirante($feirante_id, $status_filter);
@@ -82,20 +84,19 @@ switch ($method) {
                     echo json_encode(["status" => "success", "data" => [], "message" => "Nenhuma reserva encontrada."]);
                 }
             } else {
-                // Nenhum ID de consumidor ou feirante foi fornecido.
                 http_response_code(400);
                 echo json_encode(["status" => "error", "message" => "ID do consumidor ou do feirante é obrigatório."]);
             }
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             http_response_code(500);
-            echo json_encode(["status" => "error", "message" => "Erro interno no servidor: " . $e->getMessage()]);
+            echo json_encode(["status" => "error", "message" => "Erro fatal ao buscar reservas.", "details" => $e->getMessage(), "file" => $e->getFile(), "line" => $e->getLine()]);
         }
         break;
 
     case 'PUT':
-        // Lógica de atualização de status (inalterada)
-        $data = json_decode(file_get_contents("php://input"));
         try {
+            $reserva = new Reserva(); // Instanciação DENTRO do try
+            $data = json_decode(file_get_contents("php://input"));
             if (empty($data->reserva_id) || empty($data->status)) {
                 http_response_code(400);
                 echo json_encode(["status" => "error", "message" => "ID da reserva e novo status são obrigatórios."]);
@@ -110,9 +111,9 @@ switch ($method) {
                 http_response_code(503);
                 echo json_encode(["status" => "error", "message" => "Não foi possível atualizar o status da reserva."]);
             }
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             http_response_code(500);
-            echo json_encode(["status" => "error", "message" => "Erro interno no servidor."]);
+            echo json_encode(["status" => "error", "message" => "Erro fatal ao atualizar reserva.", "details" => $e->getMessage()]);
         }
         break;
 

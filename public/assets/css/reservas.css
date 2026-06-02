@@ -1,0 +1,26 @@
+/* Estilos para os cards de reserva baseados no status */
+
+.reservation-card.status-concluida .card-body {
+    border-left: 5px solid var(--bs-success);
+}
+
+.reservation-card.status-aguardando .card-body {
+    border-left: 5px solid var(--bs-warning);
+}
+
+.reservation-card.status-cancelada .card-body {
+    border-left: 5px solid var(--bs-danger);
+    opacity: 0.8;
+}
+
+.reservation-card.status-cancelada .card-title,
+.reservation-card.status-cancelada .card-text,
+.reservation-card.status-cancelada .list-unstyled {
+    text-decoration: line-through;
+    color: var(--bs-gray-600);
+}
+
+.reservation-card .card-img-top {
+    height: 180px;
+    object-fit: cover;
+}

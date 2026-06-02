@@ -124,9 +124,9 @@ class Reserva {
     }
 
     /**
-     * NOVO MÉTODO: Lista todas as reservas de um consumidor específico.
+     * MÉTODO ATUALIZADO: Lista as reservas de um consumidor, com filtro de status opcional.
      */
-    public function listarPorConsumidor($consumidor_id) {
+    public function listarPorConsumidor($consumidor_id, $status_filter = []) {
         $query = "SELECT 
                         r.id,
                         r.codigo_retirada,
@@ -142,12 +142,31 @@ class Reserva {
                         JOIN ofertas o ON r.oferta_id = o.id
                         JOIN usuarios u ON o.feirante_id = u.id
                     WHERE 
-                        r.consumidor_id = :consumidor_id
-                    ORDER BY 
-                        r.data_reserva DESC";
+                        r.consumidor_id = :consumidor_id";
+
+        $params = [':consumidor_id' => $consumidor_id];
+
+        // Adiciona o filtro de status, se fornecido
+        if (!empty($status_filter)) {
+            $status_placeholders = [];
+            foreach ($status_filter as $key => $status) {
+                $placeholder = ":status_" . $key;
+                $status_placeholders[] = $placeholder;
+                $params[$placeholder] = $status;
+            }
+            $query .= " AND r.status IN (" . implode(', ', $status_placeholders) . ")";
+        }
+
+        $query .= " ORDER BY r.data_reserva DESC";
 
         $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':consumidor_id', $consumidor_id, PDO::PARAM_INT);
+        
+        // Vincula todos os parâmetros (ID e status)
+        foreach ($params as $key => $val) {
+            $param_type = ($key === ':consumidor_id') ? PDO::PARAM_INT : PDO::PARAM_STR;
+            $stmt->bindValue($key, $val, $param_type);
+        }
+
         $stmt->execute();
         return $stmt;
     }

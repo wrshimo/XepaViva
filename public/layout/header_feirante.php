@@ -7,8 +7,32 @@ if (session_status() === PHP_SESSION_NONE) {
 
 $nome_usuario = $_SESSION['usuario_nome'] ?? 'Feirante';
 $current_page = basename($_SERVER['PHP_SELF']);
+$pageTitle = $pageTitle ?? 'XepaViva'; // Fallback para o título da página
 
 ?>
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?php echo htmlspecialchars($pageTitle); ?> - XepaViva</title>
+    
+    <!-- Bootstrap 5.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="assets/css/style.css">
+
+    <!-- High Contrast CSS - Carregado via JS -->
+    <link rel="stylesheet" href="assets/css/high-contrast.css" id="highContrastStylesheet" disabled>
+
+    <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml">
+</head>
+<body>
+
 <header>
     <nav class="navbar navbar-expand-lg navbar-dark bg-success fixed-top">
         <div class="container">
@@ -51,4 +75,4 @@ $current_page = basename($_SERVER['PHP_SELF']);
         </div>
     </nav>
 </header>
-<div style="height: 56px;"></div> <!-- Spacer for fixed-top navbar -->
+<div style="height: 70px;"></div> <!-- Spacer for fixed-top navbar -->

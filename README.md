@@ -13,23 +13,26 @@ Este projeto foi desenvolvido como parte do **Projeto Extensionista Integrador**
 
 ## ✨ Funcionalidades Principais
 
-*   **Anúncio de Kits "Xepa"**: Feirantes podem cadastrar rapidamente kits de alimentos excedentes, especificando preço, peso e foto.
+*   **Gestão de Ofertas**: Feirantes podem cadastrar, editar e remover rapidamente kits de alimentos excedentes.
+*   **Painel de Controle do Feirante**: Uma visão centralizada com estatísticas de vendas, contagem de reservas e atalhos para as principais funcionalidades.
 *   **Reserva para Consumidores**: Consumidores podem navegar pelas ofertas e reservar kits para retirada direta na feira.
-*   **Funcionamento Offline**: Graças à arquitetura PWA com Service Workers, feirantes podem cadastrar ofertas mesmo em locais com baixa ou nenhuma conectividade.
-*   **Dashboard de Impacto**: Visualização de métricas que mostram a quantidade de alimentos salvos e a economia gerada, engajando os usuários.
+*   **Funcionamento Offline**: Graças à arquitetura PWA com Service Workers, feirantes podem cadastrar ofertas mesmo sem conectividade.
+*   **Dashboard de Impacto**: Visualização de métricas que mostram a quantidade de alimentos salvos e a economia gerada.
 *   **Acessibilidade (A11y)**: Inclui um modo de alto contraste para garantir a usabilidade sob a luz solar intensa das feiras.
 
 ---
 
 ## 🚀 Status do Projeto
 
-*Última atualização: 30 de maio de 2026*
+*Última atualização: 07 de junho de 2026*
 
 | Módulo | Funcionalidade Principal | Status |
 | :--- | :--- | :--- |
 | **Gestão de Ofertas** | CRUD completo para Feirantes | ✅ **Concluído e Funcional** |
-| **Gestão de Usuários** | Cadastro e Autenticação | ⏳ Em Andamento |
-| **Gestão de Reservas**| Sistema de Reservas para Consumidores | 📋 Planejado |
+| **Painel do Feirante** | Dashboard com métricas de desempenho | ✅ **Concluído e Funcional** |
+| **Gestão de Usuários** | Cadastro e Autenticação de Feirantes | ✅ **Parcialmente Concluído** |
+| **Gestão de Reservas**| Gerenciamento de reservas pelo Feirante | ✅ **Parcialmente Concluído** |
+| **Jornada do Consumidor** | Registro, Busca e Reserva de Ofertas | ⏳ Em Andamento |
 | **PWA & Offline** | Implementação do Service Worker | 📋 Planejado |
 
 ---
@@ -38,7 +41,7 @@ Este projeto foi desenvolvido como parte do **Projeto Extensionista Integrador**
 
 O projeto foi construído com uma filosofia de **portabilidade, resiliência e acessibilidade**.
 
-*   **Backend**: API RESTful em **PHP 8+ (puro)**, seguindo uma arquitetura orientada a objetos, sem dependência de frameworks pesados.
+*   **Backend**: API RESTful em **PHP 8+ (puro)**, seguindo uma arquitetura orientada a objetos.
 *   **Frontend**: **HTML5**, **CSS3** e **Vanilla JavaScript**.
 *   **UI Framework**: **Bootstrap 5** para uma interface responsiva e mobile-first.
 *   **Banco de Dados**: **MariaDB** para persistência de dados no servidor e **LocalStorage** para dados offline no cliente.
@@ -49,10 +52,11 @@ O projeto foi construído com uma filosofia de **portabilidade, resiliência e a
 
 ## 📚 Documentação de Engenharia
 
-Toda a concepção arquitetural e os requisitos do projeto estão documentados na pasta `/docs`. Estes artefatos são a base para o desenvolvimento e a manutenção do sistema.
+Toda a concepção arquitetural e os requisitos do projeto estão documentados na pasta `/docs`.
 
-*   **[📄 Documentação de Requisitos](docs/Requisitos.md)**: Visão geral, objetivos, requisitos funcionais e não funcionais, e arquitetura da aplicação.
-*   **[🎭 Casos de Uso (Use Cases)](docs/UseCases.md)**: Especificação detalhada de todas as interações do usuário com o sistema, incluindo diagramas e fluxos de exceção.
+*   **[📄 Documentação de Requisitos](docs/Requisitos.md)**: Visão geral, objetivos, requisitos funcionais e não funcionais.
+*   **[🎭 Casos de Uso (Use Cases)](docs/UseCases.md)**: Especificação detalhada de todas as interações do usuário com o sistema.
+*   **[📝 Documentação da API](docs/API.md)**: Descrição dos endpoints da API RESTful.
 *   **[🔄 Histórico de Mudanças (Changelog)](CHANGELOG.md)**: Registro cronológico de todas as implementações e melhorias.
 
 ---

@@ -1,7 +1,7 @@
 # 🍎 Projeto XepaViva - Documentação de Requisitos
 
-* **Versão:** 2.2
-* **Data:** 16 de abril de 2026
+* **Versão:** 2.3
+* **Data:** 07 de junho de 2026
 * **Disciplina:** Projeto Extensionista Integrador
 * **Localidade de Aplicação:** Cuiabá e Várzea Grande - MT
 
@@ -40,6 +40,7 @@ O **XepaViva** é um Progressive Web App (PWA) focado na economia circular e na 
 | **RF06** | Sincronização Offline | Envio automático de dados salvos localmente ao detectar reconexão à internet. | Importante |
 | **RF07** | Alternar Modo de Alto Contraste | O sistema deve fornecer um botão de fácil acesso para ativar/desativar um modo de "Alto Contraste". | Essencial |
 | **RF08** | Exibir Página "Como Funciona" | O sistema deve apresentar uma página informativa que descreva o processo de uso da aplicação. | Importante |
+| **RF09** | Painel de Controle do Feirante | Exibir um dashboard para o feirante com métricas de desempenho (total de ofertas, total de reservas) e listas de atividades recentes. | Essencial |
 
 ### 3.2 Requisitos Não Funcionais (RNF)
 
@@ -137,14 +138,16 @@ A persistência dos dados no MariaDB é estruturada em torno de três tabelas pr
 | **Fase 2** | Sprint 2 | Desenvolvimento do Backend (API) e DB - Módulos de Usuários e Reservas | 20/04 a 08/05 |
 | **Fase 3** | Sprint 3 | Integração Frontend + Backend, PWA e Testes | 11/05 a 29/05 |
 
-### 8.2 Status das Entregas (Atualizado em 30/05/2026)
+### 8.2 Status das Entregas (Atualizado em 07/06/2026)
 
 | Requisito Associado | Entrega | Status | Data de Conclusão |
 | :--- | :--- | :--- | :--- |
-| **RF03** | **Módulo de Gerenciamento de Ofertas (CRUD Completo)** | ✅ **Concluído** | 30/05/2026 |
-| **RF01, RF02** | Módulo de Cadastro e Autenticação de Usuários | ⏳ Em Andamento | - |
-| **RF04** | Módulo de Reservas de Kits | 📋 Planejado | - |
-| **RF05** | Dashboard de Impacto | 📋 Planejado | - |
+| **RF03** | Módulo de Gerenciamento de Ofertas (CRUD) | ✅ **Concluído** | 30/05/2026 |
+| **RF09** | Painel de Controle do Feirante (Dashboard) | ✅ **Concluído** | 06/06/2026 |
+| **RF01, RF02** | Módulo de Cadastro e Autenticação (Feirante) | ✅ **Parcialmente Concluído** | - |
+| **RF04** | Módulo de Reservas (Gerenciamento pelo Feirante) | ✅ **Parcialmente Concluído** | - |
+| **RF05** | Dashboard de Impacto (Geral) | 📋 Planejado | - |
+| **Jornada do Consumidor** | Fluxo completo para o consumidor | 📋 Planejado | - |
 
 ---
 

@@ -1,100 +1,113 @@
 # 🎭 Casos de Uso (Use Cases) do XepaViva
 
-**Status do Protótipo (Sprint 0):** ✅ Todos os fluxos principais descritos neste documento foram prototipados e são totalmente navegáveis na aplicação de frontend, utilizando dados simulados (`.json`).
+*Última Atualização: 07 de junho de 2026*
+
+**Resumo:** Este documento detalha os fluxos de negócio do sistema XepaViva. As especificações aqui contidas servem como guia para o desenvolvimento e a validação das funcionalidades, com foco na consistência dos dados e nas regras de negócio, tratando a autenticação como um pré-requisito implícito para acesso aos painéis de Feirante e Consumidor.
 
 ---
 
 ## 1. Atores
 
-*   **Feirante:** Indivíduo ou entidade que comercializa produtos em feiras livres. (Persona: Seu Benedito).
-*   **Consumidor:** Indivíduo ou membro de organização que busca adquirir alimentos a um preço acessível. (Persona: Mariana).
+*   **Feirante:** Persona de negócio que oferta produtos na plataforma.
+*   **Consumidor:** Persona de negócio que reserva produtos na plataforma.
+*   **Sistema:** Entidade que executa processos automáticos.
 
-*(Nota: A autenticação bem-sucedida é uma pré-condição geral para todos os casos de uso que envolvem os atores Feirante e Consumidor.)*
+---
 
-## 2. Diagrama de Casos de Uso
+## 2. Especificação dos Casos de Uso
 
-<div align="center">
+### UC-01: Anunciar Kit Xepa
 
-![Diagrama de Casos de Uso](UseCases.png "Diagrama de Casos de Uso do XepaViva")
-
-*Figura 1: Diagrama de Casos de Uso do XepaViva.*
-
-</div>
-
-## 3. Especificação dos Casos de Uso
-
-**UC-01: Anunciar Kit Xepa**
-*   **Status do Protótipo:** ✅ **Prototipado.** O formulário é funcional, com validação e submissão simulada (dados exibidos no console).
-*   **Atores:** Feirante.
-*   **Resumo:** Permite ao feirante criar uma oferta de produtos excedentes (xepa) que ficará visível para os consumidores na plataforma.
-*   **Pré-condição:** O kit de alimentos a ser anunciado foi montado e ainda não possui um anúncio ativo.
+*   **Status:** ✅ **Concluído e Integrado**
+*   **Atores:** Feirante
+*   **Resumo:** Descreve o processo de criação de uma nova oferta de kit de alimentos na plataforma.
+*   **Pré-condição:** O produto a ser anunciado não possui um registro de oferta ativo.
 *   **Fluxo Principal:**
-    1.  O Feirante seleciona a opção "Cadastrar Oferta".
-    2.  O sistema exibe um formulário para preenchimento dos detalhes do kit.
-    3.  O Feirante preenche os campos do formulário (Nome, Preço, Peso, etc.).
-    4.  O Feirante submete o formulário.
-    5.  O sistema valida os dados.
-    6.  Se o Feirante estiver offline, o sistema armazena o anúncio no `LocalStorage` (simulado no protótipo).
-    7.  Se online, o sistema armazena o anúncio no banco de dados (simulado no protótipo).
-    8.  O sistema exibe uma mensagem de sucesso.
-*   **Pós-condição:** Um novo anúncio de kit xepa está disponível (online) ou pendente de sincronização (offline).
+    1.  O Feirante inicia o processo de criação de uma nova oferta.
+    2.  O Sistema apresenta o formulário de cadastro de oferta, contendo os campos: `nome`, `descricao`, `foto`, `preco`, `peso`, `quantidade_inicial` e `categoria`.
+    3.  O Feirante preenche todos os campos obrigatórios.
+    4.  O Feirante confirma a submissão do formulário.
+    5.  O Sistema valida se o campo `nome` não é duplicado para o mesmo feirante.
+    6.  O Sistema valida se os campos `preco`, `peso` e `quantidade_inicial` são valores numéricos positivos.
+    7.  O Sistema cria um novo registro de `oferta` no banco de dados, associado ao ID do Feirante.
+    8.  O campo `quantidade_disponivel` é inicializado com o mesmo valor de `quantidade_inicial`.
+    9.  O campo `disponivel` é definido como `TRUE`.
+    10. O Sistema exibe uma mensagem de sucesso, confirmando que a oferta foi criada.
+*   **Pós-condição:** Uma nova oferta está registrada e disponível para consulta e reserva por parte dos Consumidores.
 *   **Fluxos de Exceção:**
-    *   **FE01.1 - Falha na Validação (Passo 5):** Se os dados forem inválidos, o sistema não prossegue e destaca os campos com erros.
+    *   **FE01.1 - Nome de oferta duplicado (Passo 5):** Se já existir uma oferta com o mesmo nome para aquele feirante, o Sistema interrompe o processo e informa ao Feirante que o nome já está em uso, sugerindo a edição da oferta existente (UC-03).
+    *   **FE01.2 - Dados numéricos inválidos (Passo 6):** Se os valores para preço, peso ou quantidade não forem números positivos, o Sistema bloqueia a submissão, destaca os campos inválidos e informa ao Feirante sobre a necessidade de correção.
 
-**UC-02: Reservar Kit**
-*   **Status do Protótipo:** ✅ **Parcialmente Prototipado.** O fluxo de busca e visualização está completo. A lógica de reserva foi simulada, mas agora precisa ser implementada para refletir o novo modelo de dados.
-*   **Atores:** Consumidor.
-*   **Resumo:** Permite que um consumidor encontre, reserve um kit de alimentos e receba um código único para retirada.
-*   **Pré-condição:** Existe pelo menos uma oferta com `quantidade_disponivel` > 0.
+### UC-02: Reservar Kit
+
+*   **Status:** ⏳ **Em Andamento**
+*   **Atores:** Consumidor
+*   **Resumo:** Detalha o processo de reserva de um kit de alimentos por um consumidor.
+*   **Pré-condição:** A oferta-alvo da reserva possui o campo `disponivel` como `TRUE` e `quantidade_disponivel` maior que zero.
 *   **Fluxo Principal:**
-    1.  O Consumidor navega pela lista de ofertas disponíveis (`buscar-ofertas.php`).
-    2.  O Consumidor seleciona uma oferta de interesse para ver os detalhes.
-    3.  O Consumidor aciona a opção "Reservar Kit".
-    4.  O sistema valida a disponibilidade da oferta no banco de dados.
-    5.  O sistema cria um novo registro na tabela `reservas` com o status inicial **`Pendente`**.
-    6.  O sistema gera um **`codigo_retirada`** único (formato `XV-XXXX`) e o associa à reserva.
-    7.  O sistema exibe o `codigo_retirada` e os detalhes da reserva para o Consumidor, com o status **`Aguardando Retirada`**.
-    8.  O sistema decrementa a `quantidade_disponivel` na tabela `ofertas`.
-    9.  O sistema notifica o Feirante sobre a nova reserva (mecanismo a ser definido: webhook, push, etc.).
-*   **Pós-condição:** A reserva foi criada, a quantidade da oferta foi atualizada e o consumidor possui um código para a retirada.
-*   **Fluxos de Exceção e Alternativos:**
-    *   **FE02.1 - Oferta Indisponível (Passo 4):** Se, no momento da reserva, a `quantidade_disponivel` for zero, o sistema informa ao Consumidor que o item não está mais disponível e não prossegue.
-    *   **FA02.1 - Cancelamento pelo Consumidor:** O Consumidor pode, a qualquer momento antes da retirada, cancelar a reserva. O status da reserva é alterado para **`Cancelada pelo Consumidor`** e a `quantidade_disponivel` na oferta é incrementada de volta.
-    *   **FA02.2 - Cancelamento pelo Feirante:** O Feirante pode cancelar uma reserva. O status é alterado para **`Cancelada pelo Feirante`**, a `quantidade_disponivel` é incrementada e o Consumidor deve ser notificado.
-    *   **FA02.3 - Conclusão da Retirada:** O Feirante, ao receber o `codigo_retirada`, marca a reserva como **`Concluida`**. A `data_retirada_efetiva` é registrada.
-    *   **FA02.4 - Não Comparecimento:** Após um período definido, se o Consumidor não retirar o kit, o Feirante pode marcar a reserva como **`Nao Compareceu`**.
+    1. O Consumidor seleciona uma oferta e solicita a reserva de uma ou mais unidades.
+    2. O Sistema verifica em tempo real a `quantidade_disponivel` da oferta.
+    3. O Sistema valida se a quantidade solicitada pelo Consumidor é menor ou igual à `quantidade_disponivel`.
+    4. O Sistema cria um novo registro na tabela `reservas`, associando o ID do Consumidor e o ID da Oferta.
+    5. O status da nova reserva é definido como `Pendente`.
+    6. O Sistema gera um `codigo_retirada` único (formato `XV-XXXX`) e o armazena no registro da reserva.
+    7. O Sistema decrementa o valor de `quantidade_disponivel` na tabela `ofertas`, subtraindo a quantidade reservada.
+    8. Se a `quantidade_disponivel` da oferta chegar a zero, o Sistema atualiza o campo `disponivel` da oferta para `FALSE`.
+    9. O Sistema informa ao Consumidor que a reserva foi confirmada e exibe o `codigo_retirada`.
+*   **Pós-condição:** Uma reserva é criada, a disponibilidade da oferta é atualizada e o consumidor tem as informações para a retirada.
+*   **Fluxos de Exceção:**
+    *   **FE02.1 - Estoque insuficiente (Passo 3):** Se a quantidade solicitada for maior que a disponível, o Sistema não cria a reserva e informa ao Consumidor qual a quantidade máxima que ele pode reservar.
 
-**UC-03: Gerenciar Ofertas**
-*   **Status do Protótipo:** ✅ **Prototipado.** A página `minhas-ofertas.php` lista as ofertas do feirante, permitindo acesso para edição e remoção (simulada).
-*   **Atores:** Feirante.
-*   **Resumo:** Permite ao Feirante visualizar, editar ou remover os anúncios que ele publicou.
-*   **Pré-condição:** O Feirante possui um ou mais anúncios.
-*   **Fluxo Principal (Remover Oferta):**
-    1.  O Feirante acessa a seção "Minhas Ofertas".
-    2.  O sistema exibe a lista de todos os anúncios do Feirante.
-    3.  O Feirante seleciona a opção "Remover" em uma oferta.
-    4.  O sistema solicita uma confirmação.
-    5.  O Feirante confirma a remoção.
-    6.  O sistema remove o anúncio (simulado).
+### UC-03: Gerenciar Ofertas
+
+*   **Status:** ✅ **Concluído e Integrado**
+*   **Atores:** Feirante
+*   **Resumo:** Descreve a visualização e alteração de ofertas existentes.
+*   **Pré-condição:** N/A
+*   **Fluxo Principal (Edição):**
+    1. O Feirante solicita a visualização de suas ofertas.
+    2. O Sistema exibe a lista completa de ofertas cadastradas pelo Feirante.
+    3. O Feirante seleciona a opção para editar uma oferta específica.
+    4. O Sistema apresenta o mesmo formulário do UC-01, pré-preenchido com os dados da oferta selecionada.
+    5. O Feirante altera os dados desejados e submete o formulário.
+    6. O Sistema aplica as mesmas validações do UC-01 (exceto a de nome duplicado, se o nome não for alterado).
+    7. O Sistema atualiza o registro da oferta no banco de dados com os novos dados.
+    8. O Sistema registra a data da alteração no campo `data_modificacao`.
+    9. O Sistema informa ao Feirante que a oferta foi atualizada com sucesso.
+*   **Pós-condição:** Os dados da oferta são atualizados no sistema.
 *   **Fluxos Alternativos:**
-    *   **FA03.1 - Editar Oferta (inicia no Passo 3):** O Feirante seleciona "Editar". O sistema o direciona para o formulário (UC-01) pré-preenchido.
+    *   **FA03.1 - Remoção de Oferta:** O Feirante seleciona a opção "Remover" em uma oferta. O Sistema verifica se existem reservas com status `Pendente` ou `Aguardando Retirada` para esta oferta. Se não houver, a oferta é removida. Se houver, a ação é bloqueada (FE03.1).
+*   **Fluxos de Exceção:**
+    *   **FE03.1 - Remoção de oferta com reservas ativas:** Se o Feirante tentar remover uma oferta que possua reservas ativas, o Sistema impede a remoção e exibe uma mensagem informando que é preciso primeiro cancelar as reservas pendentes.
 
-**UC-04: Visualizar Dashboard de Impacto**
-*   **Status do Protótipo:** ✅ **Prototipado.** Os painéis exibem dados de impacto carregados de arquivos `.json`.
-*   **Atores:** Feirante, Consumidor.
-*   **Resumo:** Apresenta um painel visual com métricas sobre o impacto gerado.
-*   **Fluxo Principal:**
-    1.  O usuário acessa a seção "Painel".
-    2.  O sistema coleta os dados simulados.
-    3.  O sistema renderiza os gráficos com os dados.
+### UC-04: Visualizar Dashboard de Impacto
 
-**UC-05: Sincronizar Dados Offline**
-*   **Status do Protótipo:** 🟡 **Parcialmente Prototipado.** A lógica de *salvar* dados offline (UC-01) está simulada no console. A sincronização automática ao reconectar (`online` event) aguarda o desenvolvimento do backend.
-*   **Atores:** Sistema.
-*   **Resumo:** Garante que as ações realizadas offline sejam enviadas ao servidor ao restabelecer a conexão.
-*   **Pré-condição:** O dispositivo recuperou a conexão com a internet E existem ações pendentes no `LocalStorage`.
+*   **Status:** 📋 **Planejado**
+*   **Atores:** Feirante, Consumidor
+*   **Resumo:** Apresenta métricas agregadas sobre o impacto positivo gerado pela plataforma.
+
+### UC-05: Sincronizar Dados Offline
+
+*   **Status:** 📋 **Planejado**
+*   **Atores:** Sistema
+*   **Resumo:** Garante que dados criados offline (ex: novas ofertas) sejam enviados ao servidor quando a conexão é restabelecida.
+
+### UC-06: Visualizar Painel de Controle do Feirante
+
+*   **Status:** ✅ **Concluído e Integrado**
+*   **Atores:** Feirante
+*   **Resumo:** Apresenta uma visão consolidada e em tempo real dos indicadores e atividades relevantes para o Feirante.
+*   **Pré-condição:** N/A
 *   **Fluxo Principal:**
-    1.  O sistema detecta o evento de reconexão (`online`).
-    2.  O sistema verifica o `LocalStorage` por itens pendentes.
-    3.  Para cada item, o sistema envia a requisição para a API.
-    4.  Após a confirmação, o sistema remove o item da fila local.
+    1. O Feirante acessa seu painel de controle.
+    2. O Sistema executa as seguintes consultas, em paralelo ou de forma otimizada:
+        a. Contar o número total de ofertas ativas (`disponivel` = TRUE) para o feirante.
+        b. Contar o número total de reservas com status `Pendente` ou `Aguardando Retirada`.
+        c. Somar o `preco` de todas as reservas com status `Concluida`.
+        d. Buscar as 5 ofertas mais recentes (ordenadas por `data_criacao` descendente).
+        e. Buscar as 5 reservas mais recentes (ordenadas por `data_reserva` descendente).
+    3. O Sistema exibe os resultados consolidados na interface do Feirante, preenchendo os seguintes componentes:
+        *   **Métricas Principais:** Os totais calculados nas etapas 2a, 2b e 2c.
+        *   **Lista de Ofertas Recentes:** Os dados da etapa 2d.
+        *   **Lista de Reservas Recentes:** Os dados da etapa 2e.
+*   **Pós-condição:** O Feirante tem uma visão clara e atualizada de seu desempenho e atividades recentes na plataforma.

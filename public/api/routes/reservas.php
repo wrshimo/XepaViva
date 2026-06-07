@@ -41,7 +41,17 @@ switch ($method) {
         try {
             $reserva = new Reserva();
 
-            if (isset($_GET['id'])) {
+            if (isset($_GET['codigo_retirada'])) {
+                $codigo_retirada = htmlspecialchars(strip_tags($_GET['codigo_retirada']));
+                $dados_reserva = $reserva->buscarPorCodigoRetirada($codigo_retirada);
+                if ($dados_reserva) {
+                    http_response_code(200);
+                    echo json_encode(["status" => "success", "data" => $dados_reserva]);
+                } else {
+                    http_response_code(404);
+                    echo json_encode(["status" => "error", "message" => "Código de retirada inválido ou não encontrado."]);
+                }
+            } elseif (isset($_GET['id'])) {
                 $reserva_id = htmlspecialchars(strip_tags($_GET['id']));
                 $dados_reserva = $reserva->buscarPorId($reserva_id);
                 if ($dados_reserva) {
@@ -88,7 +98,7 @@ switch ($method) {
                 }
             } else {
                 http_response_code(400);
-                echo json_encode(["status" => "error", "message" => "ID da reserva, do consumidor ou do feirante é obrigatório."]);
+                echo json_encode(["status" => "error", "message" => "Parâmetro obrigatório não fornecido (id, codigo_retirada, consumidor_id ou feirante_id)."]);
             }
         } catch (Throwable $e) {
             http_response_code(500);

@@ -7,6 +7,7 @@ if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_tipo'] !== 'Feirante')
 }
 
 $feirante_id = $_SESSION['usuario_id'];
+$pageTitle = "Minhas Ofertas";
 
 ?>
 <!DOCTYPE html>
@@ -14,7 +15,7 @@ $feirante_id = $_SESSION['usuario_id'];
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Minhas Ofertas | XepaViva</title>
+    <title><?php echo $pageTitle; ?> | XepaViva</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <link href="assets/css/style.css" rel="stylesheet">
@@ -22,23 +23,9 @@ $feirante_id = $_SESSION['usuario_id'];
     <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml">
 </head>
 <body>
-    <div id="toastContainer" class="toast-container position-fixed bottom-0 end-0 p-3"></div>
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-success shadow-sm">
-        <div class="container">
-            <a class="navbar-brand" href="feirante.php"><img src="./assets/images/logo-white.svg" alt="XepaViva" width="120"></a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"><span class="navbar-toggler-icon"></span></button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto align-items-center">
-                    <li class="nav-item"><a class="nav-link" href="feirante.php"><i class="bi bi-house-door-fill me-1"></i>Início</a></li>
-                    <li class="nav-item"><a class="nav-link active" href="minhas-ofertas.php" aria-current="page"><i class="bi bi-list-check me-1"></i>Minhas Ofertas</a></li>
-                    <li class="nav-item"><a class="nav-link" href="gerenciar-reservas.php"><i class="bi bi-calendar-check-fill me-1"></i>Gerenciar Reservas</a></li>
-                    <li class="nav-item me-lg-2"><a class="nav-link" href="logout.php"><i class="bi bi-box-arrow-right me-1"></i>Sair</a></li>
-                    <li class="nav-item mt-2 mt-lg-0"><button id="highContrastToggle" class="btn btn-outline-light"><i class="bi bi-sun"></i></button></li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+    <?php include 'layout/header_feirante.php'; ?>
+    <div id="toastContainer" class="toast-container position-fixed bottom-0 end-0 p-3"></div>
 
     <main class="container mt-4">
         <div class="d-flex justify-content-between align-items-center mb-4">
@@ -95,7 +82,7 @@ $feirante_id = $_SESSION['usuario_id'];
         </div>
     </div>
 
-    <footer class="mt-5 text-muted text-center"><p>&copy; 2024 XepaViva. Todos os direitos reservados.</p></footer>
+    <?php include 'layout/footer.php'; ?>
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="assets/js/high-contrast.js"></script>

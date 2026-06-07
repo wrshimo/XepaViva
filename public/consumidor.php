@@ -3,95 +3,106 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+// Redireciona se não for um consumidor logado
 if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_tipo'] !== 'Consumidor') {
     header("Location: login.php");
     exit();
 }
 
-$pageTitle = "Painel do Consumidor";
+$pageTitle = "Meu Painel";
+// Carrega o cabeçalho específico do consumidor
 require_once 'layout/header_consumidor.php';
 ?>
 
-<main class="container mt-4">
+<main class="container my-4">
+    
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h2">Meu Painel</h1>
+        <a href="ofertas.php" class="btn btn-primary" style="min-height: 44px;"><i class="bi bi-search"></i> Buscar Novas Ofertas</a>
+    </div>
+
     <!-- KPIs de Impacto Pessoal -->
     <section class="row mb-4">
-        <div class="col-md-6 mb-3">
+        <div class="col-md-4 mb-3">
             <div class="card text-center shadow-sm h-100">
                 <div class="card-body">
-                    <h5 class="card-title"><i class="bi bi-currency-dollar text-success"></i> Sua Economia Total</h5>
-                    <p class="card-text fs-4 fw-bold">R$ 45,00</p>
+                    <h5 class="card-title text-success"><i class="bi bi-coin"></i> Sua Economia Total</h5>
+                    <p class="card-text fs-4 fw-bold" id="kpi-economia-total">R$ 0,00</p>
                 </div>
             </div>
         </div>
-        <div class="col-md-6 mb-3">
+        <div class="col-md-4 mb-3">
             <div class="card text-center shadow-sm h-100">
                 <div class="card-body">
-                    <h5 class="card-title"><i class="bi bi-leaf text-primary"></i> Alimentos que Você Salvou</h5>
-                    <p class="card-text fs-4 fw-bold">12 Kg</p>
+                    <h5 class="card-title text-primary"><i class="bi bi-box-seam"></i> Alimentos que Você Salvou</h5>
+                    <p class="card-text fs-4 fw-bold" id="kpi-kg-salvos">0 Kg</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card text-center shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="bi bi-receipt"></i> Total de Reservas</h5>
+                    <p class="card-text fs-4 fw-bold" id="kpi-total-reservas">0</p>
                 </div>
             </div>
         </div>
     </section>
     
-    <!-- Gráfico de Impacto -->
+    <!-- Reservas Ativas -->
+    <section id="reservas-ativas-section" class="mb-4">
+         <h2 class="h3 mb-3">Minhas Reservas Ativas</h2>
+         <div id="reservas-ativas-container">
+             <!-- Conteúdo inserido via JS -->
+         </div>
+         <div class="alert alert-info" id="sem-reservas-ativas" style="display: none;">Você não tem nenhuma reserva aguardando retirada.</div>
+    </section>
+
+    <!-- Histórico de Reservas -->
     <section class="mb-4">
+        <h2 class="h3 mb-3">Histórico de Compras</h2>
         <div class="card shadow-sm">
             <div class="card-body">
-                <h5 class="card-title">Sua Economia ao Longo do Tempo</h5>
-                <div class="chart-container" style="position: relative; height:300px">
-                    <canvas id="graficoEconomiaConsumidor"></canvas>
+                <div id="historico-container">
+                    <p id="sem-historico" class="text-muted">Seu histórico de compras aparecerá aqui.</p>
+                    <div class="table-responsive" id="historico-table-container" style="display: none;">
+                        <table class="table table-hover align-middle">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Produto</th>
+                                    <th scope="col">Data</th>
+                                    <th scope="col">Status</th>
+                                    <th scope="col">Valor</th>
+                                    <th scope="col">Ação</th>
+                                </tr>
+                            </thead>
+                            <tbody id="historico-table-body">
+                                <!-- Conteúdo inserido via JS -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
-
-    <!-- Minhas Reservas Ativas -->
-    <section class="mb-4">
-         <h2 class="h3 mb-3">Minhas Reservas Ativas</h2>
-         <div class="card mb-3 shadow-sm">
-             <div class="card-body">
-                 <div class="d-flex justify-content-between align-items-center">
-                     <div>
-                        <h5 class="card-title mb-1">Kit de Tomate Italiano</h5>
-                        <p class="card-text mb-0"><small class="text-muted">Feirante: Seu Benedito | Retirar na Feira da Vila Madalena</small></p>
-                     </div>
-                     <a href="codigo-retirada.php" class="btn btn-success" style="min-height: 44px;">Ver Código de Retirada</a>
-                 </div>
-             </div>
-         </div>
+    
+    <!-- Feirantes Favoritos -->
+    <section id="favoritos-section" class="mb-4" style="display: none;">
+        <h2 class="h3 mb-3">Seus Feirantes</h2>
+        <div class="row" id="feirantes-favoritos-container">
+            <!-- Conteúdo inserido via JS -->
+        </div>
     </section>
 
 </main>
 
-<?php require_once 'layout/footer.php'; ?>
+<?php
+// Carrega o rodapé padrão e os scripts JS
+require_once 'layout/footer.php';
+?>
 
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-    const ctx = document.getElementById('graficoEconomiaConsumidor')?.getContext('2d');
-    if (ctx) {
-        new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'],
-                datasets: [{
-                    label: 'Economia (R$)',
-                    data: [12, 19, 3, 5, 2, 3],
-                    borderColor: '#2ECC71',
-                    backgroundColor: 'rgba(46, 204, 113, 0.1)',
-                    fill: true,
-                    tension: 0.3
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
-        });
-    }
-});
-</script>
+<!-- Script específico para esta página -->
+<script src="assets/js/dashboard-consumidor.js"></script>
+
+</body>
+</html>

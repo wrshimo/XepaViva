@@ -1,34 +1,19 @@
 <?php
 // api/config/Database.php
 
-/**
- * Classe para gerenciamento da conexão com o banco de dados utilizando PDO.
- * 
- * Esta classe segue o padrão Singleton para garantir uma única instância de conexão
- * durante o ciclo de vida da aplicação, otimizando recursos.
- */
 class Database {
     
-    // Propriedades da conexão
     private $host;
     private $db_name;
     private $username;
     private $password;
     private $charset;
-
-    // Instância da conexão PDO
     private $conn;
 
-    // Instância única da classe (Singleton)
     private static $instance = null;
 
-    /**
-     * Construtor privado para impedir a criação de múltiplas instâncias.
-     * Carrega as configurações do banco de dados e inicia a conexão.
-     */
     private function __construct() {
-        // Inclui o arquivo de configuração
-        require_once 'config.php';
+        require_once __DIR__ . '/config.php';
 
         $this->host = DB_HOST;
         $this->db_name = DB_NAME;
@@ -36,28 +21,28 @@ class Database {
         $this->password = DB_PASS;
         $this->charset = DB_CHARSET;
 
-        // Tenta estabelecer a conexão
+        // A conexão PDO é iniciada mas a exceção não é capturada aqui de propósito.
+        // Deixamos a exceção "borbulhar" para ser capturada no momento da chamada (ex: no roteiro da API).
+        // No entanto, para o problema imediato, vamos adicionar um manipulador que retorna JSON.
         try {
             $dsn = "mysql:host=" . $this->host . ";dbname=" . $this->db_name . ";charset=" . $this->charset;
             $this->conn = new PDO($dsn, $this->username, $this->password);
-            
-            // Configura o PDO para lançar exceções em caso de erro
             $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            // Garante que os dados sejam retornados como arrays associativos
             $this->conn->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-
         } catch (PDOException $e) {
-            // Em caso de falha na conexão, encerra a execução e exibe o erro
-            // Em um ambiente de produção, o erro deveria ser logado em vez de exibido
-            die("Erro de conexão com o banco de dados: " . $e->getMessage());
+            // **ESTA É A CORREÇÃO**
+            // Em vez de die(), que retorna HTML e quebra o frontend, nós retornamos um JSON válido com o erro.
+            header("Content-Type: application/json; charset=UTF-8");
+            http_response_code(503); // 503 Service Unavailable - indica um problema no servidor
+            echo json_encode([
+                "status" => "error",
+                "message" => "Falha crítica: Não foi possível conectar ao banco de dados.",
+                "error_details" => $e->getMessage() // Importante para depuração
+            ]);
+            exit; // Interrompe a execução para não continuar com um PDO nulo.
         }
     }
 
-    /**
-     * Método estático para obter a instância única da classe (Singleton).
-     *
-     * @return Database A instância única da classe Database.
-     */
     public static function getInstance() {
         if (self::$instance == null) {
             self::$instance = new Database();
@@ -65,23 +50,12 @@ class Database {
         return self::$instance;
     }
 
-    /**
-     * Método para obter o objeto de conexão PDO.
-     *
-     * @return PDO O objeto de conexão PDO.
-     */
     public function getConnection() {
         return $this->conn;
     }
 
-    /**
-     * Previne a clonagem da instância (parte do padrão Singleton).
-     */
     private function __clone() { }
 
-    /**
-     * Previne a desserialização da instância (parte do padrão Singleton).
-     */
     public function __wakeup() { }
 }
 ?>

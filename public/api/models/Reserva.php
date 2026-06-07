@@ -123,9 +123,6 @@ class Reserva {
         return $stmt;
     }
 
-    /**
-     * MÉTODO ATUALIZADO: Lista as reservas de um consumidor, com filtro de status opcional.
-     */
     public function listarPorConsumidor($consumidor_id, $status_filter = []) {
         $query = "SELECT 
                         r.id,
@@ -146,7 +143,6 @@ class Reserva {
 
         $params = [':consumidor_id' => $consumidor_id];
 
-        // Adiciona o filtro de status, se fornecido
         if (!empty($status_filter)) {
             $status_placeholders = [];
             foreach ($status_filter as $key => $status) {
@@ -161,7 +157,6 @@ class Reserva {
 
         $stmt = $this->conn->prepare($query);
         
-        // Vincula todos os parâmetros (ID e status)
         foreach ($params as $key => $val) {
             $param_type = ($key === ':consumidor_id') ? PDO::PARAM_INT : PDO::PARAM_STR;
             $stmt->bindValue($key, $val, $param_type);
@@ -197,6 +192,30 @@ class Reserva {
             return true;
         }        
         return false;
+    }
+
+    /**
+     * NOVO MÉTODO: Busca os detalhes de uma única reserva pelo seu ID.
+     */
+    public function buscarPorId($reserva_id) {
+        $query = "SELECT 
+                        r.id,
+                        r.codigo_retirada,
+                        r.status,
+                        o.nome as oferta_nome,
+                        u.nome as feirante_nome
+                    FROM 
+                        " . $this->table_name . " r
+                        JOIN ofertas o ON r.oferta_id = o.id
+                        JOIN usuarios u ON o.feirante_id = u.id
+                    WHERE 
+                        r.id = :id
+                    LIMIT 1";
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':id', $reserva_id, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 }
 ?>

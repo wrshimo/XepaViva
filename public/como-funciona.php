@@ -45,7 +45,13 @@ require __DIR__ . '/layout/header_publico.php';
                     </div>
                 </div>
             </div>
-        </section>
+            <div class="text-center mt-5">
+                <h4 class="fw-light">Pronto para começar?</h4>
+                <a href="buscar-ofertas.php" class="btn btn-success btn-lg me-2 mt-2">Ver Ofertas Agora</a>
+                <a href="registro.php" class="btn btn-outline-success btn-lg mt-2">Cadastre-se</a>
+            </div>
+        </div>
+    </section>
 
     <!-- Seção para Feirantes -->
     <section class="py-5 bg-light">
@@ -80,7 +86,12 @@ require __DIR__ . '/layout/header_publico.php';
                     </div>
                 </div>
             </div>
-        </section>
+            <div class="text-center mt-5">
+                <h4 class="fw-light">Quer transformar suas perdas em lucro?</h4>
+                <a href="registro.php" class="btn btn-primary btn-lg mt-2">Cadastre sua Banca Gratuitamente</a>
+            </div>
+        </div>
+    </section>
 
 </main>
 

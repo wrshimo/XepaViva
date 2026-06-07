@@ -21,7 +21,6 @@ require_once __DIR__ . '/layout/header_feirante.php';
                     <h1 class="display-5 fw-bold">Boas-vindas, <?php echo htmlspecialchars($nomeUsuario); ?>!</h1>
                     <p class="col-md-8 fs-4">Este é o seu painel de controle. Acompanhe suas vendas e gerencie suas ofertas.</p>
                     <div class="mt-4">
-                        <a href="anunciar-xepa.php" class="btn btn-primary btn-lg" style="min-height: 44px;"><i class="bi bi-plus-circle"></i> Anunciar Nova Xepa</a>
                         <a href="minhas-ofertas.php" class="btn btn-outline-secondary btn-lg" style="min-height: 44px;"><i class="bi bi-list-ul"></i> Gerenciar Ofertas</a>
                     </div>
                 </div>
